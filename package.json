@@ -1,0 +1,12 @@
+{
+  "name": "imbition",
+  "version": "1.0.0",
+  "description": "CRH analytics",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js --progress --colors",
+    "watch": "webpack --config webpack.config.js --watch"
+  },
+  "author": "",
+  "license": "ISC"
+}

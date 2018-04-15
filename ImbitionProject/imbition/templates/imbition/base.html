@@ -1,0 +1,17 @@
+{% load render_bundle from webpack_loader %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="{% static 'favicon.png' %}" />
+    <title>CRH</title>
+</head>
+
+<body>
+    {% block body %} {% endblock %}
+    {% block scripts %} {% endblock %}
+    {% render_bundle 'main' %}
+</body>
+</html>

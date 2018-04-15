@@ -1,3 +1,5 @@
 ImbitionEnv/*
 ImbitionProject/ImbitionProject.sock
 *.pyc
+node_modules/*
+*.log

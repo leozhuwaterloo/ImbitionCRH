@@ -11,12 +11,13 @@
 
   "rules": {
     "max-len": [1, 120, 2, {ignoreComments: true}],
-    "react/prop-types": [2],
+    "react/prop-types": [2, { ignore: ['children', 'location'] }],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "jsx-a11y/anchor-is-valid": [1, {
       "components": [ "Link" ],
       "specialLink": [ "to" ],
     }],
+    "class-methods-use-this": 1,
     "react/prefer-stateless-function": 1,
     "no-param-reassign": 0,
     "one-var-declaration-per-line": [2, "initializations"],

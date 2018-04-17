@@ -1,21 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
+import { ConnectedRouter } from 'react-router-redux';
+import createHistory from 'history/createBrowserHistory';
 import 'normalize.css';
-import reducer from './reducers';
 import App from './components/App';
-import { logger, crashReporter } from './middlewares';
 import '../css/style.scss';
+import configureStore from './store';
 
-const store = createStore(
-  reducer,
-  applyMiddleware(logger, crashReporter),
-);
+const history = createHistory(),
+  store = configureStore(history);
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <ConnectedRouter history={history}>
+      <App />
+    </ConnectedRouter>
   </Provider>,
   document.getElementById('react-app'),
 );

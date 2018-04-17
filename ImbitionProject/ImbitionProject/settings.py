@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'webpack_loader',
     'imbition.apps.ImbitionConfig',
 ]
@@ -135,4 +136,14 @@ WEBPACK_LOADER = {
         'BUNDLE_DIR_NAME': 'webpack/bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, '../webpack-stats.json'),
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
 }

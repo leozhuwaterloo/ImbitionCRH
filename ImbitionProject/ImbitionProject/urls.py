@@ -16,9 +16,26 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from rest_framework import routers
+from rest_framework.schemas import get_schema_view
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+from imbition import views as imbition_views
+
+router = routers.DefaultRouter()
+router.register(r'api/imbition/employee', imbition_views.EmployeeViewSet)
+router.register(r'api/imbition/permission', imbition_views.PermissionViewSet)
+router.register(r'api/imbition/permissiongroup', imbition_views.PermissionGroupViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', RedirectView.as_view(pattern_name='index', permanent=False)),
     path('imbition/', include('imbition.urls')),
-]
+    path('api/', get_schema_view()),
+    path('api/auth/', include(
+        'rest_framework.urls', namespace='rest_framework')),
+    path('api/auth/token/obtain/', TokenObtainPairView.as_view()),
+    path('api/auth/token/refresh/', TokenRefreshView.as_view()),
+] + router.urls

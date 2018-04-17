@@ -15,6 +15,12 @@ module.exports = {
   },
 
   plugins: [
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+      Popper: 'popper.js',
+      Util: 'exports-loader?Util!bootstrap/js/dist/util'
+    }),
     new BundleTracker({path: __dirname, filename: './webpack-stats.json'})
   ],
 

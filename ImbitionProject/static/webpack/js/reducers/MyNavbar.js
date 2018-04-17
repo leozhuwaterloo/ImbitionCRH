@@ -5,8 +5,7 @@ const initialState = {
   isMobile: true,
 };
 
-
-export default function mainPage(state = initialState, action) {
+export default (state = initialState, action) => {
   switch (action.type) {
     case SET_TITLE:
       return Object.assign({}, state, {
@@ -19,4 +18,4 @@ export default function mainPage(state = initialState, action) {
     default:
       return state;
   }
-}
+};

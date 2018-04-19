@@ -1,21 +1,90 @@
-from imbition.models import Employee, Permission, PermissionGroup
+from imbition.models import Permission, Department, Position, Employee
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
-class PermissionSerializer(serializers.ModelSerializer):
+# Edit Serializer are for both create and update
+
+# Department
+class DepartmentListAndEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ('id', 'name')
+
+# Position List Serializer moved here as we need it later
+class PositionListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ('id', 'name', 'department')
+    department = DepartmentListAndEditSerializer()
+
+# Continue Department
+class DepartmentDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ('id', 'name', 'positions')
+    positions = PositionListSerializer(many=True)
+
+# Permission
+class PermissionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Permission
-        fields = ('id', 'description', 'access', 'permission')
-
-class PermissionGroupEditSerializer(serializers.ModelSerializer):
+        fields = ('id', 'description')
+class PermissionDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PermissionGroup
-        fields = ('id', 'group_name', 'permissions')
+        model = Permission
+        fields = ('id', 'description', 'position', 'permission', 'owned_by')
+    position = PositionListSerializer()
+    owned_by = PositionListSerializer(many=True)
+class PermissionEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Permission
+        fields = ('id', 'position', 'permission')
 
-class PermissionGroupViewSerializer(PermissionGroupEditSerializer):
-    permissions = PermissionSerializer(read_only=True, many=True)
+# Position
+# Position List Serializer moved to the top
 
-# Employee Create
+# Employee List Serializer (moved here before we need to use it later)
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name')
+class EmployeeListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = ('id', 'user', 'phone')
+    user = UserListSerializer()
+
+# Continue Position
+class PositionDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ('id', 'name', 'parent', 'department', 'permissions', 'employees')
+    parent = PositionListSerializer()
+    department = DepartmentListAndEditSerializer()
+    permissions = PermissionListSerializer(many=True)
+    employees = EmployeeListSerializer(many=True)
+class PositionEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ('id', 'name', 'parent', 'department', 'permissions')
+
+
+# Employee Detail Serializer
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'last_joined', 'date_joined')
+    last_login = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    date_joined = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+class EmployeeDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = ('id', 'user', 'phone', 'portrait', 'position')
+    user = UserListSerializer()
+    position = PositionListSerializer()
+
+
+# Employee Create Serializer
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -23,25 +92,24 @@ class UserCreateSerializer(serializers.ModelSerializer):
 class EmployeeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = ('id', 'user', 'phone', 'permission_group')
+        fields = ('id', 'user', 'phone', 'portrait', 'position')
     user =  UserCreateSerializer()
-
     def create(self, validated_data):
         validated_data["user"] = User.objects.create_user(**validated_data.get("user", {}))
         new_employee = Employee(**validated_data)
         new_employee.save()
         return new_employee
 
-# Employee Edit
-class UserEditSerializer(serializers.ModelSerializer):
+# Employee Update Serializer
+class UserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'email')
-class EmployeeEditSerializer(serializers.ModelSerializer):
+class EmployeeUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = ('id', 'user', 'phone', 'portrait', 'permission_group')
-    user = UserEditSerializer()
+        fields = ('id', 'user', 'phone', 'portrait', 'position')
+    user = UserUpdateSerializer()
     def update(self, instance, validated_data):
         user = validated_data.get('user', {})
         instance.user.first_name = user.get('first_name', None)
@@ -50,22 +118,13 @@ class EmployeeEditSerializer(serializers.ModelSerializer):
         instance.user.save()
         instance.phone = validated_data.get('phone', None)
         instance.portrait =validated_data.get('portrait', None)
-        instance.permission_group = validated_data.get('permission_group', None)
+        instance.department = validated_data.get('department', None)
         instance.save()
         return instance
 
-# Employee Detail View
-class UserViewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'last_login', 'date_joined')
-    last_login = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
-    date_joined = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 
-
-class EmployeeViewSerializer(serializers.ModelSerializer):
+# Special Serializers
+class PositionPermissionListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Employee
-        fields = ('id', 'user', 'phone', 'portrait', 'permission_group')
-    user = UserViewSerializer(read_only=True)
-    permission_group = PermissionGroupViewSerializer(read_only=True)
+        model = Position
+        fields = ('id', 'name', 'parent', 'department', 'permissions')

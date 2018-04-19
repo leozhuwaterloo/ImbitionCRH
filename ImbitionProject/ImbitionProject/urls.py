@@ -23,11 +23,16 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 from imbition import views as imbition_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 router = routers.DefaultRouter()
 router.register(r'api/imbition/employee', imbition_views.EmployeeViewSet)
 router.register(r'api/imbition/permission', imbition_views.PermissionViewSet)
-router.register(r'api/imbition/permissiongroup', imbition_views.PermissionGroupViewSet)
+router.register(r'api/imbition/position', imbition_views.PositionViewSet)
+router.register(r'api/imbition/department', imbition_views.DepartmentViewSet)
+router.register(r'api/imbition/positionpermission', imbition_views.PositionPermissionViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -38,4 +43,4 @@ urlpatterns = [
         'rest_framework.urls', namespace='rest_framework')),
     path('api/auth/token/obtain/', TokenObtainPairView.as_view()),
     path('api/auth/token/refresh/', TokenRefreshView.as_view()),
-] + router.urls
+] + router.urls + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -16,7 +16,7 @@ class MyNavbarDumb extends React.Component {
           <li className="nav-item">
             <span className="nav-link">{this.props.title}</span>
           </li>
-          <li className="nav-item back-btn fill-container absolute">
+          <li className="nav-item back-btn absolute">
             <a
               className="nav-link"
               href="#back"

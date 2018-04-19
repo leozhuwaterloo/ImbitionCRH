@@ -1,7 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import TextInput from './TextInput';
-import { LOGIN_ERROR } from '../consts';
+import {
+  LOGIN_USERNAME_NAME, LOGIN_PASSWORD_NAME, LOGIN_SUBMIT_NAME,
+  LOGIN_FIRST_NAME, LOGIN_FIRST_URL, translate,
+} from '../consts';
+
 
 class LoginForm extends React.Component {
   constructor(props) {
@@ -30,26 +35,31 @@ class LoginForm extends React.Component {
       <form onSubmit={this.onSubmit} className="fill-container">
         <TextInput
           name="username"
-          label="用户名"
-          error={(errors.username && errors.username[0]) || ''}
+          label={LOGIN_USERNAME_NAME}
+          error={(errors.username && translate(errors.username[0])) || ''}
           onChange={this.handleInputChange}
           value={this.state.username}
+          containerClassName="mb-2"
+          labelClassName="col-3"
         />
         <TextInput
           name="password"
-          label="密码"
-          error={(errors.password && errors.password[0]) || ''}
+          label={LOGIN_PASSWORD_NAME}
+          error={(errors.password && translate(errors.password[0])) || ''}
           type="password"
           onChange={this.handleInputChange}
           value={this.state.password}
+          containerClassName="mb-4"
+          labelClassName="col-3"
         />
         <div className="form-group center-display">
-          <button type="submit" className="btn btn-primary">登录</button>
+          <button type="submit" className="btn btn-primary mr-3">{LOGIN_SUBMIT_NAME}</button>
+          <Link className="btn btn-primary" to={LOGIN_FIRST_URL}>{LOGIN_FIRST_NAME}</Link>
         </div>
         {
           errors.non_field_errors ?
             <div className="alert alert-primary">
-              { LOGIN_ERROR }
+              { translate(errors.non_field_errors) }
             </div> : ''
         }
       </form>

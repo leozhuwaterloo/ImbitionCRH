@@ -17,6 +17,7 @@
       "components": [ "Link" ],
       "specialLink": [ "to" ],
     }],
+    "jsx-a11y/label-has-for": 0,
     "class-methods-use-this": 1,
     "react/prefer-stateless-function": 1,
     "no-param-reassign": 0,

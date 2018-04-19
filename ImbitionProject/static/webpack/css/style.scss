@@ -1,5 +1,10 @@
 @import './base-bootstrap.scss';
 
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 .center-display {
   display: flex;
   justify-content: center;
@@ -15,6 +20,7 @@
 .back-btn {
   display: flex;
   justify-content: flex-start;
+  height: 100%;
   margin-left: 10px;
   a {
     display: flex;
@@ -37,4 +43,13 @@
 
 .y-scroll {
   overflow-y: scroll;
+}
+
+label {
+  display: inline-table;
+}
+
+.mytextinput-feedback {
+  position: absolute;
+  margin-top: -5px;
 }

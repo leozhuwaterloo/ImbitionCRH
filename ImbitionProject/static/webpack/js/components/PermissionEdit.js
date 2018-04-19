@@ -6,45 +6,57 @@ import TextInput from './TextInput';
 import MyModal from './MyModal';
 import DistinctViewPage from './DistinctViewPage';
 import { PERMISSION_EDIT_NAME } from '../consts';
-import { fetchData, updateData } from '../actions';
+import { fetchData, updateData, createData, deleteData } from '../actions';
 
 
 class PermissionEditDumb extends React.Component {
   constructor(props) {
     super(props);
     const modalId = 'permissionModal';
+    // state position is changed and used to render changes, when save, changed for pushed
+    this.state = { positions: {}, modalPositionId: null };
+    // modalPositionId and modalPermissionId for adding permission from modal
+    // modalPositionId is in state because it is used for a label in modal
+    this.modalPermissionId = null;
+    // For new position name
+    this.newPositionName = '';
 
-    this.handleInputChange = (event, index) => {
+    // all position name inpiut field
+    this.handleInputChange = (event, positionId) => {
       const { name, value } = event.target;
-      this.state.permissiongroups[index][name] = value;
-      this.setState(this.state);
+      this.state.positions[positionId][name] = value;
+      this.forceUpdate();
     };
 
-    this.lastUpdated = null;
-    this.addPermission = () => {
-      const target = `permissiongroup/${this.state.csPermissionGroup}`,
-        body = this.state.permissiongroups[this.state.csPermissionGroup];
-      body.permissions.push(this.csPermission);
-      this.props.updatePermissionGroup(target, body);
-      this.lastUpdated = this.state.csPermissionGroup;
+    this.addPosition = (name) => {
+      this.props.createPosition({
+        name,
+        parent: null,
+        department: null,
+        permission: [],
+      });
     };
 
-    this.save = (permissiongroupId) => {
-      const target = `permissiongroup/${permissiongroupId}`,
-        body = this.state.permissiongroups[permissiongroupId];
-      this.props.updatePermissionGroup(target, body);
-      this.lastUpdated = permissiongroupId;
+    // deletePosition can be called directly from props
+
+    this.lastUpdated = null; // used to display error to the correct card
+    this.pushUpdate = (positionId) => {
+      this.props.updatePositionPermission(`position/${positionId}`, this.state.positions[positionId]);
+      this.lastUpdated = positionId;
     };
 
-    this.remove = (permissiongroupId, permissionId) => {
-      const target = `permissiongroup/${permissiongroupId}`,
-        body = this.state.permissiongroups[permissiongroupId],
+    this.addPermission = (positionId, permissionId) => {
+      this.state.positions[positionId].permissions.push(permissionId);
+      this.forceUpdate();
+    };
+
+    this.removePermission = (positionId, permissionId) => {
+      const body = this.state.positions[positionId],
         index = body.permissions.indexOf(permissionId);
       if (index > -1) {
         body.permissions.splice(index, 1);
+        this.forceUpdate();
       }
-      this.props.updatePermissionGroup(target, body);
-      this.lastUpdated = permissiongroupId;
     };
 
     this.mobileRender = () => {
@@ -53,58 +65,76 @@ class PermissionEditDumb extends React.Component {
           <select
             className="custom-select"
             onChange={(event) => {
-              this.csPermission = event.target.value;
+              this.modalPermissionId = event.target.value; // set modal's permission selected
             }}
           >
             {
-              Object.keys(this.props.permissions).map((key) => {
-                const permission = this.props.permissions[key];
-                if (!permission) return null;
+              Object.keys(this.props.permissions).map((permissionId) => {
+                const permission = this.props.permissions[permissionId];
                 return (
-                  <option value={permission.id} key={permission.id}>{permission.description}</option>
+                  <option value={permissionId} key={permissionId}>{permission.description}</option>
                 );
               })
             }
           </select>
-
         </div>
       );
+
       return (
         <div>
           <div className="container-fluid mt-4">
             <div className="row">
               {
-                Object.keys(this.state.permissiongroups).map((key) => {
-                  const permissiongroup = this.state.permissiongroups[key];
+                Object.keys(this.state.positions).map((positionId) => {
+                  const position = this.state.positions[positionId];
                   return (
-                    <div className="col-12" key={permissiongroup.id}>
+                    <div className="col-12" key={positionId}>
                       <div className="card border-primary mb-3">
-                        <div className="card-header">
+                        <div className="card-header center-display">
                           <TextInput
-                            name="group_name"
-                            label=""
+                            labelClassName="mr-1"
+                            containerClassName="mb-2"
+                            name="name"
+                            label="岗位"
                             error={(this.lastUpdated
-                              && this.lastUpdated === permissiongroup.id
-                              && this.props.errors.group_name
-                              && this.props.errors.group_name[0]) || ''}
-                            onChange={event => this.handleInputChange(event, key)}
-                            value={permissiongroup.group_name}
+                              && this.lastUpdated === positionId
+                              && this.props.errors.name
+                              && this.props.errors.name[0]) || ''}
+                            onChange={event => this.handleInputChange(event, positionId)}
+                            value={position.name}
                           />
+                          <label htmlFor={`select-${positionId}`} className="ml-3">上阶岗位</label>
+                          <select
+                            id={`select-${positionId}`}
+                            className="custom-select col-3 ml-1 mb-2"
+                            value={position.parent || ''}
+                            onChange={(event) => {
+                              position.parent = event.target.value; // temporarily set parent
+                              this.forceUpdate();
+                            }}
+                          >
+                            <option value="" />
+                            {
+                              Object.keys(this.state.positions).map(posId => (
+                                <option value={posId} key={posId}>
+                                  {this.state.positions[posId].name}
+                                </option>
+                              ))
+                            }
+                          </select>
                         </div>
                         <div className="card-body">
                           {
-                            permissiongroup.permissions.map((permissionId) => {
+                            position.permissions.map((permissionId) => {
                               const permission = this.props.permissions[permissionId];
-                              if (!permission) return null;
+                              if (!permission) return null; // if permissions not received yet
                               return (
-                                <div key={permission.id}>
-                                  <span className={`card-text ${permission.permission === 2 ? 'bold' : ''}`}>
-                                    {permission.description}
-                                  </span>
+                                <div key={permissionId}>
+                                  <span className="card-text">{permission.description}</span>
                                   <a
                                     className=""
                                     href="#remove"
-                                    onClick={() => this.remove(permissiongroup.id, permission.id)}
+                                    onClick={() => this.removePermission(positionId, permissionId)}
                                   >
                                     <FaMinusCircle className="text-primary ml-3 mb-1" size={20} />
                                   </a>
@@ -114,14 +144,14 @@ class PermissionEditDumb extends React.Component {
                             })
                           }
                         </div>
-                        <div className="card-footer">
+                        <div className="card-footer d-flex">
                           <button
                             type="button"
                             className="btn btn-primary"
                             data-toggle="modal"
-                            data-target={`#${modalId}`}
+                            data-target={`#${modalId}-1`}
                             onClick={() => {
-                              this.setState({ csPermissionGroup: permissiongroup.id });
+                              this.setState({ modalPositionId: positionId });
                             }}
                           >
                             添加权限
@@ -129,9 +159,20 @@ class PermissionEditDumb extends React.Component {
                           <button
                             type="button"
                             className="btn btn-primary ml-4"
-                            onClick={() => this.save(permissiongroup.id)}
+                            onClick={() => this.pushUpdate(positionId)}
                           >
                             保存
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-primary ml-auto"
+                            data-toggle="modal"
+                            data-target={`#${modalId}-3`}
+                            onClick={() => {
+                              this.setState({ modalPositionId: positionId });
+                            }}
+                          >
+                            删除岗位
                           </button>
                         </div>
                       </div>
@@ -140,28 +181,67 @@ class PermissionEditDumb extends React.Component {
                 })
               }
             </div>
+            <div className="row center-display">
+              <button
+                type="button"
+                className="btn btn-primary"
+                data-toggle="modal"
+                data-target={`#${modalId}-2`}
+              >
+                添加岗位
+              </button>
+            </div>
           </div>
           <MyModal
-            id={modalId}
-            title={`添加权限 (${this.state.csPermissionGroup
-              && this.props.permissiongroups[this.state.csPermissionGroup].group_name})`}
+            id={`${modalId}-1`}
+            title={`添加权限 (${this.state.modalPositionId
+              && this.props.positions[this.state.modalPositionId].name})`}
             body={modalBody}
-            onSubmit={this.addPermission}
+            onSubmit={() => this.addPermission(this.state.modalPositionId, this.modalPermissionId)}
+          />
+          <MyModal
+            id={`${modalId}-2`}
+            title="添加岗位"
+            body={
+              <TextInput
+                name="name"
+                label=""
+                error={(this.props.createerrors.name
+                  && this.props.createerrors.name[0]) || ''}
+                onChange={(event) => {
+                  this.newPositionName = event.target.value;
+                }}
+              />
+            }
+            onSubmit={() => this.addPosition(this.newPositionName)}
+          />
+          <MyModal
+            id={`${modalId}-3`}
+            title={`删除岗位 (${this.state.modalPositionId
+              && this.props.positions[this.state.modalPositionId].name})`}
+            body={
+              <p>{`你确定要删除(${this.state.modalPositionId
+              && this.props.positions[this.state.modalPositionId].name})这个岗位么?`}
+              </p>
+            }
+            onSubmit={() => this.props.deletePosition(this.state.modalPositionId)}
           />
         </div>
       );
     };
-    this.state = { permissiongroups: {} };
     props.fetchPermissions();
-    props.fetchPermissionGroups();
+    props.fetchPositions();
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ permissiongroups: nextProps.permissiongroups });
-    if (nextProps.permissions) [this.csPermission] = Object.keys(nextProps.permissions);
-    if (nextProps.permissiongroups) {
-      const [csPermissionGroup] = Object.keys(nextProps.permissiongroups);
-      this.setState({ csPermissionGroup });
+    // default modal permission selected to first permission
+    if (nextProps.permissions) [this.modalPermissionId] = Object.keys(nextProps.permissions);
+    if (nextProps.positions) {
+      const [firstPositionId] = Object.keys(nextProps.positions);
+      this.setState({
+        positions: nextProps.positions,
+        modalPositionId: firstPositionId,
+      });
     }
   }
 
@@ -176,36 +256,46 @@ class PermissionEditDumb extends React.Component {
 }
 
 PermissionEditDumb.propTypes = {
-  permissiongroups: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  fetchPermissionGroups: PropTypes.func.isRequired,
+  positions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   permissions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  fetchPermissions: PropTypes.func.isRequired,
   errors: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  updatePermissionGroup: PropTypes.func.isRequired,
+  createerrors: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  fetchPositions: PropTypes.func.isRequired,
+  fetchPermissions: PropTypes.func.isRequired,
+  updatePositionPermission: PropTypes.func.isRequired,
+  createPosition: PropTypes.func.isRequired,
+  deletePosition: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {
-    const permissiongroups = {},
+    const positions = {},
       permissions = {};
-    state.data.permissiongroups.forEach((permissionGroup) => {
-      permissiongroups[permissionGroup.id] = Object.assign({}, permissionGroup);
-      permissiongroups[permissionGroup.id].permissions = permissiongroups[permissionGroup.id]
-        .permissions.map(permission => permission.id);
+    // change position and permissions from list to id -> self dict
+    state.data.positions.forEach((position) => {
+      positions[position.id] = position;
     });
     state.data.permissions.forEach((permission) => {
       permissions[permission.id] = permission;
     });
     return {
-      permissiongroups,
+      positions,
       permissions,
       errors: state.data.updateerrors,
+      createerrors: state.data.createerrors,
     };
   },
   mapDispatchToProps = dispatch => ({
-    fetchPermissionGroups: () => dispatch(fetchData('permissiongroup')),
+    fetchPositions: () => dispatch(fetchData('positionpermission')),
     fetchPermissions: () => dispatch(fetchData('permission')),
-    updatePermissionGroup: (target, body) => {
-      dispatch(updateData(target, body)).then(setTimeout(() => dispatch(fetchData('permissiongroup')), 100));
+    updatePositionPermission: (target, body) => {
+      dispatch(updateData(target, body)).then(setTimeout(() => dispatch(fetchData('positionpermission')), 100));
+    },
+    createPosition: (body) => {
+      dispatch(createData('position', body)).then(setTimeout(() => dispatch(fetchData('positionpermission')), 100));
+    },
+    deletePosition: (positionId) => {
+      dispatch(deleteData(`position/${positionId}`))
+        .then(setTimeout(() => dispatch(fetchData('positionpermission')), 100));
     },
   }),
   PermissionEdit = connect(mapStateToProps, mapDispatchToProps)(PermissionEditDumb);

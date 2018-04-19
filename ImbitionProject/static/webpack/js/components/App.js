@@ -27,16 +27,16 @@ class AppDumb extends React.Component {
         <div>
           <MyNavbar />
           <Switch>
-            <Route exact path={ROOT_URL} component={MainPage} />
             <Route path={LOGIN_URL} component={Login} />
             <Route path={LOGOUT_URL} component={Logout} />
             <EnsureLoggedInContainer>
+              <Route exact path={ROOT_URL} component={MainPage} />
               <Route path={RECORD_EDIT_URL} component={RecordEdit} />
               <Route path={EMPLOYEE_EDIT_URL} component={EmployeeEdit} />
               <Route path={PERMISSION_EDIT_URL} component={PermissionEdit} />
             </EnsureLoggedInContainer>
           </Switch>
-          <div className="container-fluid center-display text-secondary mt-5">
+          <div className="container-fluid center-display text-secondary mt-5 mb-4">
             @2018车融汇版权所有
           </div>
         </div>

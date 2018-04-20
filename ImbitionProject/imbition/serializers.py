@@ -51,8 +51,9 @@ class UserListSerializer(serializers.ModelSerializer):
 class EmployeeListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = ('id', 'user', 'phone')
+        fields = ('id', 'user', 'phone', 'position')
     user = UserListSerializer()
+    position = PositionListSerializer()
 
 # Continue Position
 class PositionDetailSerializer(serializers.ModelSerializer):
@@ -82,7 +83,6 @@ class EmployeeDetailSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'phone', 'portrait', 'position')
     user = UserDetailSerializer()
     position = PositionListSerializer()
-
 
 # Employee Create Serializer
 class UserCreateSerializer(serializers.ModelSerializer):

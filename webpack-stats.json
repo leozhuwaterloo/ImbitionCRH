@@ -1,1 +1,1 @@
-{"status":"done","chunks":{"main":[{"name":"main.js","path":"/home/ImbitionCRH/ImbitionProject/static/webpack/bundles/main.js"}]}}
+{"status":"done","chunks":{"main":[{"name":"main.js","path":"/home/ImbitionCRH/ImbitionProject/static/webpack/bundles/main.js"}]},"error":"ModuleError","message":"\n/home/ImbitionCRH/ImbitionProject/static/webpack/js/components/EmployeeEdit/EmployeeEditMobile.js\n  33:68  error  Missing radix parameter  radix\n\n✖ 1 problem (1 error, 0 warnings)\n"}

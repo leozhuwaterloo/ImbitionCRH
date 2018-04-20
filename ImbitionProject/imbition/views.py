@@ -57,6 +57,14 @@ class EmployeeViewSet(FourSerializerViewSet):
     update_serializer = serializers.EmployeeUpdateSerializer
     queryset = Employee.objects.all()
 
+    def retrieve(self, request, pk=None):
+        queryset = Employee.objects.all()
+        employee = get_object_or_404(queryset, pk=pk)
+        serializer = serializers.EmployeeDetailSerializer(employee)
+        response = Response(serializer.data)
+        response.data = {'employee': response.data }
+        return response
+
 # Speical Viewsets
 class PositionPermissionViewSet(viewsets.ViewSet):
     queryset = Position.objects.all()

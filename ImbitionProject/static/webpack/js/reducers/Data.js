@@ -8,17 +8,27 @@ import {
 const initialState = {
   positions: [],
   employees: [],
+  departments: [],
   permissions: [],
   fetcherrors: {},
   updateerrors: {},
   createerrors: {},
   deleteerrors: {},
   user: {},
+  employee: {},
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case FETCH_SUCCESS:
+      if (action.payload.employee) {
+        const employeeDict = {};
+        employeeDict[action.payload.employee.id] = action.payload.employee;
+        return Object.assign({}, state, {
+          employee: Object.assign({}, state.employee, employeeDict),
+          fetcherrors: {},
+        });
+      }
       return Object.assign({}, state, action.payload, {
         fetcherrors: {},
       });

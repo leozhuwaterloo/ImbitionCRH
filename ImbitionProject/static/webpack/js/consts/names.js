@@ -22,6 +22,8 @@ NAMES.POSITION_DELETE_CONFIRM = positionName => `你确定要删除(${positionNa
 NAMES.POSITION_SEARCH = '查找岗位';
 
 NAMES.EMPLOYEE_EDIT = '员工调配';
+NAMES.EMPLOYEE_SEARCH = '查找员工';
+
 NAMES.RECORD_EDIT = '日志调看';
 NAMES.DEPARTMENT_EDIT = '部门分配';
 NAMES.SUMMARY = '数据统计';

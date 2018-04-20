@@ -1,13 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import FaMinusCircle from 'react-icons/lib/fa/minus-circle';
 import FaPlus from 'react-icons/lib/fa/plus';
 import { TextInput, MyModal } from '../FormControl';
-import DistinctViewPage from '../DistinctViewPage';
 import { NAMES, translate } from '../../consts';
-import { fetchData, updateData, createData, deleteData } from '../../actions';
-
 
 class PermissionEditMobile extends React.Component {
   constructor(props) {

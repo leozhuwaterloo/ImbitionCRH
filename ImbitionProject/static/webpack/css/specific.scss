@@ -7,6 +7,10 @@
   margin-left: 220px;
 }
 
+label.w-1{
+  width: 80px;
+}
+
 .portrait-container {
   width: 220px;
   height: 120px;
@@ -35,6 +39,17 @@
   }
 }
 
+.card-img-top {
+  height: 200px;
+  .card-img-container {
+    overflow: hidden;
+    width: 200px;
+    img {
+      max-height: 100%;
+      max-width: 100%;
+    }
+  }
+}
 
 .back-btn {
   position: absolute;

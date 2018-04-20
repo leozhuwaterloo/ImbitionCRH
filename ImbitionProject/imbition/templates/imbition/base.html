@@ -11,15 +11,6 @@
 
 <body>
     {% block body %} {% endblock %}
-    <script>
-    window.django = {
-        csrf: "{{ csrf_token }}",
-        user: {
-            username: "{{ request.user.username }}",
-            last_login: "{{ request.user.last_login }}",
-        }
-     };
-    </script>
     {% block scripts %} {% endblock %}
     {% render_bundle 'main' %}
 </body>

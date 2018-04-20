@@ -2,21 +2,40 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
-import DistinctViewPage from './DistinctViewPage';
-import { LOGIN_NAME, ROOT_URL } from '../consts';
+import FaUser from 'react-icons/lib/fa/user';
+import DistinctViewPage from '../DistinctViewPage';
 import LoginForm from './LoginForm';
-import { isAuthenticated, authErrors } from '../reducers';
-import { login } from '../actions';
+import { NAMES, URLS } from '../../consts';
+import { isAuthenticated, authErrors } from '../../reducers';
+import { login } from '../../actions';
 
 class LoginDumb extends React.Component {
   constructor(props) {
     super(props);
     this.mobileRender = () => (
-      <div className="container mt-5">
+      <div className="container mt-5 col-8">
+        <div className="fill-container center-display mb-3">
+          <FaUser size={100} className="text-secondary" />
+        </div>
         <LoginForm
           onSubmit={this.props.onSubmit}
           errors={this.props.errors}
         />
+      </div>
+    );
+    this.desktopRender = () => (
+      <div className="container mt-5 col-8 shadow mb-5 bg-white rounded pt-5 pb-5">
+        <div className="row center-display">
+          <div className="col-4 center-display">
+            <FaUser size={200} className="text-secondary" />
+          </div>
+          <div className="col-7">
+            <LoginForm
+              onSubmit={this.props.onSubmit}
+              errors={this.props.errors}
+            />
+          </div>
+        </div>
       </div>
     );
   }
@@ -25,12 +44,13 @@ class LoginDumb extends React.Component {
     if (!this.props.isAuthenticated) {
       return (
         <DistinctViewPage
-          title={LOGIN_NAME}
+          title={NAMES.LOGIN}
           mobileRender={() => this.mobileRender()}
+          desktopRender={() => this.desktopRender()}
         />
       );
     }
-    return <Redirect to={ROOT_URL} />;
+    return <Redirect to={URLS.ROOT} />;
   }
 }
 

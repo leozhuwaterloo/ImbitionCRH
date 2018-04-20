@@ -73,14 +73,14 @@ class PositionEditSerializer(serializers.ModelSerializer):
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'last_joined', 'date_joined')
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'last_login', 'date_joined')
     last_login = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     date_joined = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
 class EmployeeDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = ('id', 'user', 'phone', 'portrait', 'position')
-    user = UserListSerializer()
+    user = UserDetailSerializer()
     position = PositionListSerializer()
 
 

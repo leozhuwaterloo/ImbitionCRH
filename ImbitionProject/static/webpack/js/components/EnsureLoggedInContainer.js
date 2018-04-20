@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
-
-import { LOGIN_URL } from '../consts';
+import { URLS } from '../consts';
 import { isAuthenticated } from '../reducers';
 
 class EnsureLoggedInContainerDumb extends React.Component {
@@ -11,7 +10,7 @@ class EnsureLoggedInContainerDumb extends React.Component {
     if (this.props.isAuthenticated) {
       return this.props.children;
     }
-    return <Redirect to={{ pathname: LOGIN_URL }} />;
+    return <Redirect to={{ pathname: URLS.LOGIN }} />;
   }
 }
 

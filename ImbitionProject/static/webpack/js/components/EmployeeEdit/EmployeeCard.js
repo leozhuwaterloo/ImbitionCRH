@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import TextInput from './TextInput';
-import { updateData } from '../actions';
-import { translate } from '../consts';
+import TextInput from '../FormControl';
+import { updateData } from '../../actions';
+import { translate } from '../../consts';
 
 class EmployeeCardDumb extends React.Component {
   constructor(props) {

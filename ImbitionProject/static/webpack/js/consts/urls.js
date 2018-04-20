@@ -1,8 +1,15 @@
-export const ROOT_URL = '/imbition/',
-  LOGIN_URL = `${ROOT_URL}login/`,
-  LOGIN_FIRST_URL = `${LOGIN_URL}first/`,
-  LOGOUT_URL = `${ROOT_URL}logout/`,
-  RECORD_EDIT_URL = `${ROOT_URL}record/edit/`,
-  EMPLOYEE_EDIT_URL = `${ROOT_URL}employee/edit/`,
-  PERMISSION_EDIT_URL = `${ROOT_URL}permission/edit/`,
-  IMAGE_URL = '/static/imbition/img/';
+const URLS = {};
+URLS.ROOT = '/imbition/';
+URLS.LOGIN = `${URLS.ROOT}login/`;
+URLS.LOGIN_FIRST = `${URLS.LOGIN}first/`;
+URLS.LOGIN_OTHER = `${URLS.LOGIN}other/`;
+URLS.LOGOUT = `${URLS.ROOT}logout/`;
+URLS.RECORD_EDIT = `${URLS.ROOT}record/edit/`;
+URLS.EMPLOYEE_EDIT = `${URLS.ROOT}employee/edit/`;
+URLS.PERMISSION_EDIT = `${URLS.ROOT}permission/edit/`;
+URLS.DEPARTMENT_EDIT = `${URLS.ROOT}department/edit/`;
+URLS.SUMMARY = `${URLS.ROOT}summary/`;
+URLS.ANALYSIS = `${URLS.ROOT}analysis/`;
+URLS.IMAGE = '/static/imbition/img/';
+
+export default URLS;

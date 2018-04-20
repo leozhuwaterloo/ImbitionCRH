@@ -8,12 +8,9 @@ import RecordEdit from './RecordEdit';
 import EmployeeEdit from './EmployeeEdit';
 import PermissionEdit from './PermissionEdit';
 import EnsureLoggedInContainer from './EnsureLoggedInContainer';
-import Login from './Login';
-import Logout from './Logout';
-import {
-  ROOT_URL, RECORD_EDIT_URL, EMPLOYEE_EDIT_URL,
-  LOGIN_URL, LOGOUT_URL, PERMISSION_EDIT_URL,
-} from '../consts';
+import SideNavWrapper from './SideNavWrapper';
+import { Login, Logout } from './Login';
+import { URLS } from '../consts';
 import { setIsMobile } from '../actions';
 
 class AppDumb extends React.Component {
@@ -27,18 +24,18 @@ class AppDumb extends React.Component {
         <div>
           <MyNavbar />
           <Switch>
-            <Route path={LOGIN_URL} component={Login} />
-            <Route path={LOGOUT_URL} component={Logout} />
+            <Route path={URLS.LOGIN} component={Login} />
+            <Route path={URLS.LOGOUT} component={Logout} />
             <EnsureLoggedInContainer>
-              <Route exact path={ROOT_URL} component={MainPage} />
-              <Route path={RECORD_EDIT_URL} component={RecordEdit} />
-              <Route path={EMPLOYEE_EDIT_URL} component={EmployeeEdit} />
-              <Route path={PERMISSION_EDIT_URL} component={PermissionEdit} />
+              <Route exact path={URLS.ROOT} component={MainPage} />
+              <Route path={URLS.RECORD_EDIT} component={RecordEdit} />
+              <Route path={URLS.EMPLOYEE_EDIT} component={EmployeeEdit} />
+              <Route path={URLS.PERMISSION_EDIT} component={PermissionEdit} />
+              <Route path={URLS.DEPARTMENT_EDIT} component={MainPage} />
+              <Route path={URLS.SUMMARY} component={MainPage} />
+              <Route path={URLS.ANALYSIS} component={MainPage} />
             </EnsureLoggedInContainer>
           </Switch>
-          <div className="container-fluid center-display text-secondary mt-5 mb-4">
-            @2018车融汇版权所有
-          </div>
         </div>
       </BrowserRouter>
     );

@@ -11,7 +11,8 @@ export default combineReducers({
   data,
 });
 
-export const accessToken = state => fromAuth.accessToken(state.auth),
+export const getUserId = state => fromAuth.getUserId(state.auth),
+  accessToken = state => fromAuth.accessToken(state.auth),
   refreshToken = state => fromAuth.refreshToken(state.auth),
   isAuthenticated = state => fromAuth.isAuthenticated(state.auth),
   isAccessTokenExpired = state => fromAuth.isAccessTokenExpired(state.auth),

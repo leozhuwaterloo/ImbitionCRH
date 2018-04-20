@@ -1,11 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import TextInput from './TextInput';
-import {
-  LOGIN_USERNAME_NAME, LOGIN_PASSWORD_NAME, LOGIN_SUBMIT_NAME,
-  LOGIN_FIRST_NAME, LOGIN_FIRST_URL, translate,
-} from '../consts';
+import FaWechat from 'react-icons/lib/fa/wechat';
+import { TextInput } from '../FormControl';
+import { NAMES, URLS, translate } from '../../consts';
 
 
 class LoginForm extends React.Component {
@@ -35,33 +33,42 @@ class LoginForm extends React.Component {
       <form onSubmit={this.onSubmit} className="fill-container">
         <TextInput
           name="username"
-          label={LOGIN_USERNAME_NAME}
+          placeholder={NAMES.LOGIN_FIELD_1}
           error={(errors.username && translate(errors.username[0])) || ''}
           onChange={this.handleInputChange}
           value={this.state.username}
           containerClassName="mb-2"
-          labelClassName="col-3"
+          className="fill-container"
         />
         <TextInput
           name="password"
-          label={LOGIN_PASSWORD_NAME}
+          placeholder={NAMES.LOGIN_FIELD_2}
           error={(errors.password && translate(errors.password[0])) || ''}
           type="password"
           onChange={this.handleInputChange}
           value={this.state.password}
           containerClassName="mb-4"
-          labelClassName="col-3"
+          className="fill-container"
         />
-        <div className="form-group center-display">
-          <button type="submit" className="btn btn-primary mr-3">{LOGIN_SUBMIT_NAME}</button>
-          <Link className="btn btn-primary" to={LOGIN_FIRST_URL}>{LOGIN_FIRST_NAME}</Link>
-        </div>
         {
           errors.non_field_errors ?
-            <div className="alert alert-primary">
+            <div className="alert alert-warning">
               { translate(errors.non_field_errors) }
             </div> : ''
         }
+        <div className="form-group center-display">
+          <button type="submit" className="btn btn-primary fill-container">{NAMES.LOGIN_SUBMIT}</button>
+        </div>
+        <div className="form-group center-display">
+          <Link className="nav-link" to={URLS.LOGIN_FIRST}>{NAMES.LOGIN_FIRST}</Link>
+        </div>
+        <hr />
+        <div className="form-group center-display">
+          <button type="submit" className="btn btn-success fill-container"><FaWechat /> {NAMES.LOGIN_WECHAT}</button>
+        </div>
+        <div className="form-group center-display">
+          <Link className="nav-link" to={URLS.LOGIN_OTHER}>{NAMES.LOGIN_OTHER}</Link>
+        </div>
       </form>
     );
   }

@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { setTitle } from '../actions';
+import SideNavWrapper from './SideNavWrapper';
+import { NAMES } from '../consts';
 
 class DistinctViewPageDumb extends React.Component {
   componentWillMount() {
@@ -10,10 +12,23 @@ class DistinctViewPageDumb extends React.Component {
   }
   render() {
     const { isMobile, mobileRender, desktopRender } = this.props;
+    let desktop = null;
     if (isMobile) {
-      return mobileRender();
+      return (
+        <div>
+          {mobileRender()}
+          <div className="container-fluid center-display text-secondary mt-5 mb-4">
+            {NAMES.FOOTER_TEXT}
+          </div>
+        </div>
+      );
     }
-    return desktopRender();
+    desktop = desktopRender();
+    return (
+      <SideNavWrapper>
+        {desktop || mobileRender()}
+      </SideNavWrapper>
+    );
   }
 }
 
@@ -27,7 +42,7 @@ DistinctViewPageDumb.propTypes = {
 
 DistinctViewPageDumb.defaultProps = {
   mobileRender: () => <div />,
-  desktopRender: () => <div />,
+  desktopRender: () => false,
 };
 
 

@@ -4,7 +4,7 @@ from imbition import serializers
 from imbition.models import Permission, Department, Position, Employee
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
-
+from django.contrib.auth.models import User
 
 def index(request):
     return render(request, 'imbition/index.html')
@@ -65,4 +65,16 @@ class PositionPermissionViewSet(viewsets.ViewSet):
         serializer = serializers.PositionPermissionListSerializer(queryset, many=True)
         response = Response(serializer.data)
         response.data = {'positions': response.data}
+        return response
+
+
+class UserDetailViewSet(viewsets.ViewSet):
+    queryset = User.objects.all()
+    def retrieve(self, request, pk=None):
+        queryset = User.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        employee = get_object_or_404(Employee.objects.all(), user=user)
+        serializer = serializers.EmployeeDetailSerializer(employee)
+        response = Response(serializer.data)
+        response.data = {'user': response.data}
         return response

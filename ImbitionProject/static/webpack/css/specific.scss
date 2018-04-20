@@ -1,0 +1,51 @@
+.side-nav {
+  width: 220px;
+  position: fixed;
+}
+
+.content {
+  margin-left: 220px;
+}
+
+.portrait-container {
+  width: 220px;
+  height: 120px;
+  z-index: 2;
+  position: relative;
+  pointer-events: none;
+  .portrait-filter {
+    pointer-events: auto;
+    width: 220px;
+    height: 120px;
+    z-index: -1;
+    background-color: rgba(0, 0, 0, 0.65);
+    transition: background-color 0.5s ease;
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+  }
+  .rounded-circle {
+    width: 35px;
+    height: 35px;
+    overflow: hidden;
+    img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+  }
+}
+
+
+.back-btn {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  display: flex;
+  justify-content: flex-start;
+  height: 100%;
+  margin-left: 10px;
+  a {
+    display: flex;
+    align-items: center;
+  }
+}

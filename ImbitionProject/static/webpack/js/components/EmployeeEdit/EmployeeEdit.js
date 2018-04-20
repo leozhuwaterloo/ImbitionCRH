@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import EmployeeCard from './EmployeeCard';
-import DistinctViewPage from './DistinctViewPage';
-import { EMPLOYEE_EDIT_NAME } from '../consts';
-import { fetchData } from '../actions';
+import DistinctViewPage from '../DistinctViewPage';
+import { EMPLOYEE_EDIT_NAME } from '../../consts';
+import { fetchData } from '../../actions';
 
 class EmpolyeeEditDumb extends React.Component {
   constructor(props) {
@@ -12,7 +12,7 @@ class EmpolyeeEditDumb extends React.Component {
     this.mobileRender = () => (
       <div className="container-fluid mt-4">
         <EmployeeCard
-          employee={this.props.employees[0]}
+          employee={{}}
         />
       </div>
     );

@@ -48,6 +48,14 @@ export default (state = initialState, action) => {
   }
 };
 
+
+export function getUserId(state) {
+  if (state.refresh) {
+    return state.refresh.user_id;
+  }
+  return null;
+}
+
 export function accessToken(state) {
   if (state.access) {
     return state.access.token;

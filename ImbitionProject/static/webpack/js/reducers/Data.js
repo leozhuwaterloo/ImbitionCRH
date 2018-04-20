@@ -13,6 +13,7 @@ const initialState = {
   updateerrors: {},
   createerrors: {},
   deleteerrors: {},
+  user: {},
 };
 
 export default (state = initialState, action) => {

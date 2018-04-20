@@ -3,29 +3,14 @@
 body {
   overflow-x: hidden;
   width: 100%;
+  background-color: #d9e0e7;
+  font-size: 0.9rem;
 }
 
 .center-display {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.absolute {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-}
-
-.back-btn {
-  display: flex;
-  justify-content: flex-start;
-  height: 100%;
-  margin-left: 10px;
-  a {
-    display: flex;
-    align-items: center;
-  }
 }
 
 .fill-container {
@@ -49,7 +34,39 @@ label {
   display: inline-table;
 }
 
-.mytextinput-feedback {
-  position: absolute;
-  margin-top: -5px;
+.nav-link {
+  padding: 3px 0px;
 }
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: rgba(0, 0, 0, 0.3) !important;
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: rgba(0, 0, 0, 0.3) !important;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: rgba(0, 0, 0, 0.3) !important;
+}
+
+a {
+  transition: color 0.25s ease;
+}
+
+
+[data-toggle="collapse"] {
+  .float-right {
+    margin-top: 5px;
+    transition: transform 0.25s ease;
+  }
+}
+
+[data-toggle="collapse"][aria-expanded="true"] {
+  .float-right {
+    transform: rotate(90deg);
+  }
+}
+
+
+@import "./specific.scss";

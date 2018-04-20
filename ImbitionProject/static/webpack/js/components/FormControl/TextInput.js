@@ -5,7 +5,6 @@ const TextInput = ({
   name, label, error, className, containerClassName, labelClassName, type, ...rest
 }) => {
   const id = `id_${name}`;
-  if (error === 'This field may not be blank.') error = '此处不能为空';
   return (
     <div className={`form-group center-display m-0 ${containerClassName}`}>
       {label ? <label htmlFor={id} className={`m-0 ${labelClassName}`}>{label}</label> : ''}
@@ -17,7 +16,7 @@ const TextInput = ({
           name={name}
           {...rest}
         />
-        <div className="invalid-feedback mytextinput-feedback">{error}</div>
+        {error ? <div className="invalid-feedback">{error}</div> : ''}
       </div>
     </div>
   );
@@ -26,8 +25,8 @@ const TextInput = ({
 
 TextInput.propTypes = {
   name: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
-  error: PropTypes.string.isRequired,
+  label: PropTypes.string,
+  error: PropTypes.string,
   type: PropTypes.string,
   className: PropTypes.string,
   containerClassName: PropTypes.string,
@@ -35,6 +34,8 @@ TextInput.propTypes = {
 };
 
 TextInput.defaultProps = {
+  label: '',
+  error: '',
   type: 'text',
   className: '',
   containerClassName: '',

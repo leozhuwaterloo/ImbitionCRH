@@ -10,7 +10,7 @@ class EnsureLoggedInContainerDumb extends React.Component {
     if (this.props.isAuthenticated) {
       return this.props.children;
     }
-    return <Redirect to={{ pathname: URLS.LOGIN }} />;
+    return <Redirect to={URLS.LOGIN} />;
   }
 }
 

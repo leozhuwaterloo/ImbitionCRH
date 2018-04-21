@@ -33,7 +33,7 @@ router.register(r'api/imbition/position', imbition_views.PositionViewSet)
 router.register(r'api/imbition/department', imbition_views.DepartmentViewSet)
 router.register(r'api/imbition/positionpermission', imbition_views.PositionPermissionViewSet)
 router.register(r'api/imbition/user', imbition_views.UserDetailViewSet)
-
+router.register(r'api/imbition/positiontree', imbition_views.PositionTreeViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

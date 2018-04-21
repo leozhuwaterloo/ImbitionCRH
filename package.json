@@ -19,6 +19,7 @@
   "homepage": "https://github.com/leozhuwaterloo/ImbitionCRH#readme",
   "dependencies": {
     "bootstrap": "^4.1.0",
+    "d3": "^5.1.0",
     "exports-loader": "^0.7.0",
     "history": "^4.7.2",
     "jquery": "^3.3.1",

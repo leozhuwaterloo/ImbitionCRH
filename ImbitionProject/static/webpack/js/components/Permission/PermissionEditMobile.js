@@ -37,7 +37,7 @@ class PermissionEditMobile extends React.Component {
 
     this.lastUpdated = null; // used to display error to the correct card
     this.pushUpdate = (positionId) => {
-      this.props.updatePositionPermission(`position/${positionId}`, this.state.positions[positionId]);
+      this.props.updatePositionPermission(positionId, this.state.positions[positionId]);
       this.lastUpdated = positionId;
     };
 
@@ -58,8 +58,10 @@ class PermissionEditMobile extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     // default modal permission selected to first permission
-    if (nextProps.permissions) [this.modalPermissionId] = Object.keys(nextProps.permissions);
-    if (nextProps.positions) {
+    if (Object.keys(nextProps.permissions).length !== 0) {
+      [this.modalPermissionId] = Object.keys(nextProps.permissions);
+    }
+    if (Object.keys(nextProps.positions).length !== 0) {
       const [firstPositionId] = Object.keys(nextProps.positions);
       this.setState({
         positions: nextProps.positions,

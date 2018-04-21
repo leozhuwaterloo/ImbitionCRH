@@ -3,5 +3,5 @@ import { Redirect } from 'react-router';
 import { URLS } from '../../consts';
 
 export default () => (
-  <div />
+  <Redirect to={URLS.DEPARTMENT_EDIT} />
 );

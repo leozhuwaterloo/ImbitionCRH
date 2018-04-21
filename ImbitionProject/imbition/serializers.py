@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 # Edit Serializer are for both create and update
 
 # Department
-class DepartmentListAndEditSerializer(serializers.ModelSerializer):
+class DepartmentListAndCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
         fields = ('id', 'name')
@@ -15,14 +15,13 @@ class PositionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
         fields = ('id', 'name', 'department')
-    department = DepartmentListAndEditSerializer()
+    department = DepartmentListAndCreateSerializer()
 
 # Continue Department
-class DepartmentDetailSerializer(serializers.ModelSerializer):
+class DepartmentDetailAndUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
         fields = ('id', 'name', 'positions')
-    positions = PositionListSerializer(many=True)
 
 # Permission
 class PermissionListSerializer(serializers.ModelSerializer):
@@ -61,7 +60,7 @@ class PositionDetailSerializer(serializers.ModelSerializer):
         model = Position
         fields = ('id', 'name', 'parent', 'department', 'permissions', 'employees')
     parent = PositionListSerializer()
-    department = DepartmentListAndEditSerializer()
+    department = DepartmentListAndCreateSerializer()
     permissions = PermissionListSerializer(many=True)
     employees = EmployeeListSerializer(many=True)
 class PositionEditSerializer(serializers.ModelSerializer):
@@ -128,3 +127,15 @@ class PositionPermissionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
         fields = ('id', 'name', 'parent', 'department', 'permissions')
+
+class PositionTreeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ('name', 'children')
+    children = serializers.SerializerMethodField()
+
+    def get_children(self, obj):
+        if obj.children is not None:
+            return PositionTreeSerializer(obj.children, many=True).data
+        else:
+            return None

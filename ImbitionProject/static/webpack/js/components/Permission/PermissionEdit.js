@@ -57,15 +57,19 @@ const mapStateToProps = (state) => {
   mapDispatchToProps = dispatch => ({
     fetchPositions: () => dispatch(fetchData('positionpermission')),
     fetchPermissions: () => dispatch(fetchData('permission')),
-    updatePositionPermission: (target, body) => {
-      dispatch(updateData(target, body)).then(setTimeout(() => dispatch(fetchData('positionpermission')), 100));
+    updatePositionPermission: (positionId, body) => {
+      dispatch(updateData(`position/${positionId}`, body))
+        .then(setTimeout(() => {
+          dispatch(fetchData('positionpermission'));
+          dispatch(fetchData('permission'));
+        }, 200));
     },
     createPosition: (body) => {
-      dispatch(createData('position', body)).then(setTimeout(() => dispatch(fetchData('positionpermission')), 100));
+      dispatch(createData('position', body)).then(setTimeout(() => dispatch(fetchData('positionpermission')), 200));
     },
     deletePosition: (positionId) => {
       dispatch(deleteData(`position/${positionId}`))
-        .then(setTimeout(() => dispatch(fetchData('positionpermission')), 100));
+        .then(setTimeout(() => dispatch(fetchData('positionpermission')), 200));
     },
   }),
   PermissionEdit = connect(mapStateToProps, mapDispatchToProps)(PermissionEditDumb);

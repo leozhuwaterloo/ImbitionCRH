@@ -73,8 +73,8 @@ class SideNavWrapperDumb extends React.Component {
               </li>
               <div className="collapse" id="view">
                 <li className="nav-item ml-3 mr-3">
-                  <Link className="nav-link text-secondary" to={URLS.PERMISSION_TREE_VIEW}>
-                    <FontAwesome.FaTree className="mb-1 mr-1" />{NAMES.PERMISSION_TREE_VIEW}
+                  <Link className="nav-link text-secondary" to={URLS.POSITION_TREE_VIEW}>
+                    <FontAwesome.FaTree className="mb-1 mr-1" />{NAMES.POSITION_TREE_VIEW}
                   </Link>
                 </li>
               </div>

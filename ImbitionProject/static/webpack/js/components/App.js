@@ -6,7 +6,9 @@ import MainPage from './MainPage';
 import MyNavbar from './MyNavbar';
 import RecordEdit from './RecordEdit';
 import EmployeeEdit from './EmployeeEdit';
-import { PermissionEdit, PermissionTreeView } from './Permission';
+import PermissionEdit from './Permission';
+import PositionTreeView from './Position';
+import DepartmentEdit from './Department';
 import EnsureLoggedInContainer from './EnsureLoggedInContainer';
 import { Login, Logout } from './Login';
 import { URLS } from '../consts';
@@ -29,9 +31,9 @@ class AppDumb extends React.Component {
               <Route exact path={URLS.ROOT} component={MainPage} />
               <Route path={URLS.RECORD_EDIT} component={RecordEdit} />
               <Route path={URLS.EMPLOYEE_EDIT} component={EmployeeEdit} />
-              <Route exact path={URLS.PERMISSION_TREE_VIEW} component={PermissionTreeView} />
+              <Route exact path={URLS.POSITION_TREE_VIEW} component={PositionTreeView} />
               <Route path={URLS.PERMISSION_EDIT} component={PermissionEdit} />
-              <Route path={URLS.DEPARTMENT_EDIT} component={MainPage} />
+              <Route path={URLS.DEPARTMENT_EDIT} component={DepartmentEdit} />
               <Route path={URLS.SUMMARY} component={MainPage} />
               <Route path={URLS.ANALYSIS} component={MainPage} />
             </EnsureLoggedInContainer>

@@ -35,10 +35,10 @@ class PermissionViewSet(FourSerializerViewSet):
 
 class DepartmentViewSet(FourSerializerViewSet):
     list_key = 'departments'
-    list_serializer = serializers.DepartmentListAndEditSerializer
-    detail_serializer = serializers.DepartmentDetailSerializer
-    create_serializer = serializers.DepartmentListAndEditSerializer
-    update_serializer = serializers.DepartmentListAndEditSerializer
+    list_serializer = serializers.DepartmentListAndCreateSerializer
+    detail_serializer = serializers.DepartmentDetailAndUpdateSerializer
+    create_serializer = serializers.DepartmentListAndCreateSerializer
+    update_serializer = serializers.DepartmentDetailAndUpdateSerializer
     queryset = Department.objects.all()
 
 class PositionViewSet(FourSerializerViewSet):
@@ -85,4 +85,15 @@ class UserDetailViewSet(viewsets.ViewSet):
         serializer = serializers.EmployeeDetailSerializer(employee)
         response = Response(serializer.data)
         response.data = {'user': response.data}
+        return response
+
+
+class PositionTreeViewSet(viewsets.ViewSet):
+    queryset = Position.objects.all()
+    def retrieve(self, request, pk=None):
+        queryset = Position.objects.all()
+        position = get_object_or_404(queryset, pk=pk)
+        serializer = serializers.PositionTreeSerializer(position)
+        response = Response(serializer.data)
+        response.data = {'positiontree': response.data}
         return response

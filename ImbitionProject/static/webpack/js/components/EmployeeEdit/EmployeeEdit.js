@@ -66,7 +66,7 @@ const mapStateToProps = (state) => {
     fetchPositions: () => dispatch(fetchData('position')),
     updateEmployee: (employeeId, body) => {
       dispatch(updateData(`employee/${employeeId}`, body))
-        .then(setTimeout(() => dispatch(fetchData(`employee/${employeeId}`)), 100));
+        .then(setTimeout(() => dispatch(fetchData(`employee/${employeeId}`)), 200));
     },
   }),
   EmpolyeeEdit = connect(mapStateToProps, mapDispatchToProps)(EmpolyeeEditDumb);

@@ -19,6 +19,7 @@ const initialState = {
   user: {},
   positionpermissions: [],
   employee: {},
+  positiontree: {},
 };
 
 export default (state = initialState, action) => {

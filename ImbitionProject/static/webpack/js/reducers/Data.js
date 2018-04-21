@@ -10,11 +10,14 @@ const initialState = {
   employees: [],
   departments: [],
   permissions: [],
+
   fetcherrors: {},
   updateerrors: {},
   createerrors: {},
   deleteerrors: {},
+
   user: {},
+  positionpermissions: [],
   employee: {},
 };
 

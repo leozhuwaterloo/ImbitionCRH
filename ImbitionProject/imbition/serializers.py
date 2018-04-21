@@ -118,7 +118,7 @@ class EmployeeUpdateSerializer(serializers.ModelSerializer):
         instance.user.save()
         instance.phone = validated_data.get('phone', None)
         instance.portrait =validated_data.get('portrait', None)
-        instance.department = validated_data.get('department', None)
+        instance.position = validated_data.get('position', None)
         instance.save()
         return instance
 

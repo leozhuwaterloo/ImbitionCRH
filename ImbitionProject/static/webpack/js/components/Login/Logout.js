@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router';
 import { logout } from '../../actions';
-import { LOGIN_URL } from '../../consts';
+import { URLS } from '../../consts';
 
 const LogoutDumb = (props) => {
     props.logout();
-    return <Redirect to={{ pathname: LOGIN_URL }} />;
+    return <Redirect to={{ pathname: URLS.LOGIN }} />;
   },
   mapDispatchToProps = dispatch => ({
     logout: () => dispatch(logout()),

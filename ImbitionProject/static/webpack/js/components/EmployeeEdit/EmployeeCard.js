@@ -1,11 +1,9 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { TextInput } from '../FormControl';
-import { updateData } from '../../actions';
-import { translate } from '../../consts';
+import { TextInput, MySelect } from '../FormControl';
+import { translate, NAMES } from '../../consts';
 
-class EmployeeCardDumb extends React.Component {
+class EmployeeCard extends React.Component {
   constructor(props) {
     super(props);
     this.state = { employee: props.employee };
@@ -28,13 +26,13 @@ class EmployeeCardDumb extends React.Component {
       <div className={`card p-0 mb-2 ${this.props.cardClassName}`}>
         <div className="card-header bg-dark text-light">{(employee && employee.user
             && `${employee.user.last_name}${employee.user.first_name}`)
-            || '名字'}
+            || NAMES.EMPLOYEE_NAME}
         </div>
         <div className="card-img-top center-display mt-4">
           <div className="card-img-container center-display rounded-circle fill-container bg-secondary">
             <img
               src={(employee && employee.portrait) || ''}
-              alt="员工照片"
+              alt={NAMES.EMPLOYEE_PORTRAIT}
             />
           </div>
         </div>
@@ -50,11 +48,13 @@ class EmployeeCardDumb extends React.Component {
                         if (userKey === 'id' || userKey === 'username') return null;
                         return (
                           <TextInput
+                            disabled={userKey === 'last_login' || userKey === 'date_joined'}
                             key={userKey}
                             name={userKey}
                             labelClassName="w-1"
                             label={translate(userKey)}
-                            error={(this.props.errors[userKey] && this.props.errors[userKey][0]) || ''}
+                            error={(this.props.errors[key] && this.props.errors[key][userKey]
+                              && translate(this.props.errors[key][userKey][0])) || ''}
                             onChange={this.handleInputChange}
                             value={employee[key][userKey] || ''}
                           />
@@ -64,45 +64,79 @@ class EmployeeCardDumb extends React.Component {
                   </div>
                 );
               }
+              if (key === 'position') {
+                return (
+                  <div key={key}>
+                    <div className="form-group center-display m-0">
+                      <label htmlFor="permission-select" className="m-0 w-1">{NAMES.POSITION}</label>
+                      <MySelect
+                        id="permission-select"
+                        canBeNull
+                        className="w-1 mb-0"
+                        displayField="name"
+                        dict={this.props.positions}
+                        value={(employee.position && employee.position.id) || ''}
+                        onChange={(event) => {
+                          employee.position = this.props.positions[event.target.value];
+                          this.forceUpdate();
+                        }}
+                      />
+                    </div>
+                    <TextInput
+                      name="name"
+                      disabled
+                      labelClassName="w-1"
+                      label={translate('department')}
+                      value={(employee.position
+                        && employee.position.department
+                        && employee.position.department.name) || ''}
+                    />
+                  </div>
+                );
+              }
               return (
                 <TextInput
                   key={key}
                   name={key}
                   labelClassName="w-1"
                   label={translate(key)}
-                  error={(this.props.errors.password && this.props.errors.password[0]) || ''}
+                  error={(this.props.errors[key] && translate(this.props.errors[key])) || ''}
                   onChange={this.handleInputChange}
-                  value={(key === 'position'
-                    ? (employee[key] && employee[key].name)
-                    : employee[key]) || ''}
+                  value={employee[key] || ''}
                 />
               );
             })
           }
+        </div>
+        <div className="card-footer center-display">
+          <button
+            type="button"
+            className="btn btn-info"
+            onClick={() => {
+              this.props.updateEmployee(employee.id, Object.assign({}, employee, {
+                position: (employee.position && employee.position.id) || null,
+                portrait: null,
+              }));
+            }}
+          >
+            {NAMES.EMPLOYEE_SAVE}
+          </button>
         </div>
       </div>
     );
   }
 }
 
-EmployeeCardDumb.propTypes = {
-  employee: PropTypes.object, // eslint-disable-line react/forbid-prop-types
+EmployeeCard.propTypes = {
+  employee: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  positions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   errors: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   updateEmployee: PropTypes.func.isRequired,
   cardClassName: PropTypes.string,
 };
 
-EmployeeCardDumb.defaultProps = {
-  employee: {},
+EmployeeCard.defaultProps = {
   cardClassName: 'col-12',
 };
-
-const mapStateToProps = state => ({
-    errors: state.data.updateerrors,
-  }),
-  mapDispatchToProps = dispatch => ({
-    updateEmployee: (target, body) => dispatch(updateData(target, body)),
-  }),
-  EmployeeCard = connect(mapStateToProps, mapDispatchToProps)(EmployeeCardDumb);
 
 export default EmployeeCard;

@@ -41,7 +41,7 @@ const mapStateToProps = (state) => {
     const positions = {},
       permissions = {};
     // change position and permissions from list to id -> self dict
-    state.data.positions.forEach((position) => {
+    state.data.positionpermissions.forEach((position) => {
       positions[position.id] = position;
     });
     state.data.permissions.forEach((permission) => {

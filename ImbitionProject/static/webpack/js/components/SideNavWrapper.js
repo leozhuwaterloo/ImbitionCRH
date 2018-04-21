@@ -46,9 +46,9 @@ class SideNavWrapperDumb extends React.Component {
             }
             <div className="collapse" id="user-items">
               <li className="nav-item ml-3 mr-3 mt-2">
-                <a className="nav-link text-secondary" href="#">
+                <Link className="nav-link text-secondary" to={URLS.LOGOUT}>
                   <FontAwesome.FaSignOut className="mb-1 mr-1" />{NAMES.LOGOUT_SUBMIT}
-                </a>
+                </Link>
               </li>
               <li className="nav-item ml-3 mr-3">
                 <a className="nav-link text-secondary" href="#">
@@ -62,6 +62,25 @@ class SideNavWrapperDumb extends React.Component {
               <li
                 className="nav-item"
                 data-toggle="collapse"
+                data-target="#view"
+                aria-expanded="false"
+                aria-controls="edit"
+              >
+                <a className="nav-link text-secondary" href="#view">
+                  <FontAwesome.FaEdit className="mb-1 mr-1" />{NAMES.VIEW}
+                  <FontAwesome.FaAngleRight className="float-right" />
+                </a>
+              </li>
+              <div className="collapse" id="view">
+                <li className="nav-item ml-3 mr-3">
+                  <Link className="nav-link text-secondary" to={URLS.PERMISSION_TREE_VIEW}>
+                    <FontAwesome.FaTree className="mb-1 mr-1" />{NAMES.PERMISSION_TREE_VIEW}
+                  </Link>
+                </li>
+              </div>
+              <li
+                className="nav-item"
+                data-toggle="collapse"
                 data-target="#edit"
                 aria-expanded="false"
                 aria-controls="edit"
@@ -71,7 +90,7 @@ class SideNavWrapperDumb extends React.Component {
                   <FontAwesome.FaAngleRight className="float-right" />
                 </a>
               </li>
-              <div className="collapse mt-1 mb-1" id="edit">
+              <div className="collapse" id="edit">
                 <li className="nav-item ml-3 mr-3">
                   <Link className="nav-link text-secondary" to={URLS.RECORD_EDIT}>
                     <FontAwesome.FaCalendarPlusO className="mb-1 mr-1" />{NAMES.RECORD_EDIT}

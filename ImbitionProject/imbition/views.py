@@ -72,7 +72,7 @@ class PositionPermissionViewSet(viewsets.ViewSet):
         queryset = Position.objects.all()
         serializer = serializers.PositionPermissionListSerializer(queryset, many=True)
         response = Response(serializer.data)
-        response.data = {'positions': response.data}
+        response.data = {'positionpermissions': response.data}
         return response
 
 

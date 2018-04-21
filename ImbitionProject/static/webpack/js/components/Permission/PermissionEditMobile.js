@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import FaMinusCircle from 'react-icons/lib/fa/minus-circle';
 import FaPlus from 'react-icons/lib/fa/plus';
-import { TextInput, MyModal } from '../FormControl';
+import { TextInput, MyModal, MySelect } from '../FormControl';
 import { NAMES, translate } from '../../consts';
 
 class PermissionEditMobile extends React.Component {
@@ -69,26 +69,6 @@ class PermissionEditMobile extends React.Component {
   }
 
   render() {
-    const modalBody = (
-      <div>
-        <select
-          className="custom-select"
-          onChange={(event) => {
-            this.modalPermissionId = event.target.value; // set modal's permission selected
-          }}
-        >
-          {
-            Object.keys(this.props.permissions).map((permissionId) => {
-              const permission = this.props.permissions[permissionId];
-              return (
-                <option value={permissionId} key={permissionId}>{permission.description}</option>
-              );
-            })
-          }
-        </select>
-      </div>
-    );
-
     return (
       <div>
         <div className="container-fluid mt-4">
@@ -127,24 +107,18 @@ class PermissionEditMobile extends React.Component {
                           value={position.name}
                         />
                         <label htmlFor={`select-${positionId}`} className="ml-1">{NAMES.POSITION_PARENT}</label>
-                        <select
+                        <MySelect
                           id={`select-${positionId}`}
-                          className="custom-select col-4 ml-1 mb-2"
+                          canBeNull
+                          className="col-4 ml-1 mb-2"
                           value={position.parent || ''}
                           onChange={(event) => {
                             position.parent = event.target.value; // temporarily set parent
                             this.forceUpdate();
                           }}
-                        >
-                          <option value="" />
-                          {
-                            Object.keys(this.state.positions).map(posId => (
-                              <option value={posId} key={posId}>
-                                {this.state.positions[posId].name}
-                              </option>
-                            ))
-                          }
-                        </select>
+                          dict={this.state.positions}
+                          displayField="name"
+                        />
                       </div>
                       <div className="card-body">
                         {
@@ -218,7 +192,15 @@ class PermissionEditMobile extends React.Component {
           id={`${this.modalId}-1`}
           title={`${NAMES.PERMISSION_ADD} (${this.state.modalPositionId
             && this.props.positions[this.state.modalPositionId].name})`}
-          body={modalBody}
+          body={
+            <MySelect
+              onChange={(event) => {
+                this.modalPermissionId = event.target.value; // set modal's permission selected
+              }}
+              dict={this.props.permissions}
+              displayField="description"
+            />
+          }
           onSubmit={() => this.addPermission(this.state.modalPositionId, this.modalPermissionId)}
         />
         <MyModal

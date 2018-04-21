@@ -11,8 +11,9 @@ class DistinctViewPageDumb extends React.Component {
     if (title) storeTitle(title);
   }
   render() {
-    const { isMobile, mobileRender, desktopRender } = this.props;
-    let desktop = null;
+    const {
+      isMobile, mobileRender, desktopRender, sideNav,
+    } = this.props;
     if (isMobile) {
       return (
         <div>
@@ -23,12 +24,15 @@ class DistinctViewPageDumb extends React.Component {
         </div>
       );
     }
-    desktop = desktopRender();
-    return (
-      <SideNavWrapper>
-        {desktop || mobileRender()}
-      </SideNavWrapper>
-    );
+    if (sideNav) {
+      return (
+        <SideNavWrapper>
+          {desktopRender() || mobileRender()}
+        </SideNavWrapper>
+      );
+    }
+
+    return desktopRender() || mobileRender();
   }
 }
 
@@ -38,11 +42,13 @@ DistinctViewPageDumb.propTypes = {
   isMobile: PropTypes.bool.isRequired,
   mobileRender: PropTypes.func,
   desktopRender: PropTypes.func,
+  sideNav: PropTypes.bool,
 };
 
 DistinctViewPageDumb.defaultProps = {
   mobileRender: () => <div />,
   desktopRender: () => false,
+  sideNav: true,
 };
 
 

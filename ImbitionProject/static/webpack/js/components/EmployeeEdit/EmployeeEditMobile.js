@@ -12,7 +12,7 @@ class EmployeeEditMobile extends React.Component {
 
   render() {
     const { searchFilter, departmentFilter } = this.state,
-      { employees, departments } = this.props;
+      { employee, employees, departments } = this.props;
     return (
       <div className="container-fluid mt-4">
         <div className="ml-3 mr-3">
@@ -51,7 +51,7 @@ class EmployeeEditMobile extends React.Component {
                 }
                 this.setState({ employeeIds: values });
                 values.forEach((value) => {
-                  if (!this.props.employee[value]) {
+                  if (!employee[value]) {
                     this.props.fetchEmployee(value);
                   }
                 });
@@ -65,13 +65,16 @@ class EmployeeEditMobile extends React.Component {
           </div>
           <div className="row">
             {
-              this.state.employeeIds.map(employeeId => (
-                <EmployeeCard
-                  key={employeeId}
-                  employee={this.props.employee[employeeId]}
-                  cardClassName={this.props.cardClassName}
-                />
-              ))
+              this.state.employeeIds.map((employeeId) => {
+                if (!employee[employeeId]) return null;
+                return (
+                  <EmployeeCard
+                    key={employeeId}
+                    {...this.props}
+                    employee={employee[employeeId]}
+                  />
+                );
+              })
             }
           </div>
         </div>
@@ -84,7 +87,10 @@ EmployeeEditMobile.propTypes = {
   employees: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   employee: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   departments: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
+  positions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  errors: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   fetchEmployee: PropTypes.func.isRequired,
+  updateEmployee: PropTypes.func.isRequired,
   cardClassName: PropTypes.string,
 };
 

@@ -1,6 +1,6 @@
 const NAMES = {};
 NAMES.LOGIN = '登录';
-NAMES.LOGIN_FIELD_1 = '账号/邮箱/手机';
+NAMES.LOGIN_FIELD_1 = '账号/手机';
 NAMES.LOGIN_FIELD_2 = '密码';
 NAMES.LOGIN_SUBMIT = '登录';
 NAMES.LOGOUT_SUBMIT = '登出';
@@ -20,12 +20,18 @@ NAMES.POSITION_ADD = '添加岗位';
 NAMES.POSITION_DELETE = '删除岗位';
 NAMES.POSITION_DELETE_CONFIRM = positionName => `你确定要删除(${positionName})这个岗位么?`;
 NAMES.POSITION_SEARCH = '查找岗位';
+NAMES.PERMISSION_TREE_VIEW = '权限树图';
 
 NAMES.EMPLOYEE_EDIT = '员工调配';
 NAMES.EMPLOYEE_SEARCH = '查找员工';
+NAMES.EMPLOYEE_SAVE = '保存';
+NAMES.EMPLOYEE_NAME = '名字';
+NAMES.EMPLOYEE_PORTRAIT = '员工头像';
 
 NAMES.RECORD_EDIT = '日志调看';
 NAMES.DEPARTMENT_EDIT = '部门分配';
+NAMES.DEPARTMENT = '部门';
+
 NAMES.SUMMARY = '数据统计';
 NAMES.ANALYSIS = '数据分析';
 NAMES.MAIN = '首页';
@@ -35,4 +41,6 @@ NAMES.SETTINGS = '设置';
 NAMES.EDIT = '修改';
 NAMES.VIEW = '查看';
 NAMES.NAVIGATION_PANEL = '导航栏';
+
+NAMES.NO_PHONE = '对不起, 此项暂不支持手机观看';
 export default NAMES;

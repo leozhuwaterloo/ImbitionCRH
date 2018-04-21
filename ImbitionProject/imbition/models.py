@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+import uuid
 
 class Permission(models.Model):
     PERMISSION_VIEW = 1

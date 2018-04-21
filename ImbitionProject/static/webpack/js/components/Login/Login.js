@@ -45,6 +45,7 @@ class LoginDumb extends React.Component {
       return (
         <DistinctViewPage
           title={NAMES.LOGIN}
+          sideNav={false}
           mobileRender={() => this.mobileRender()}
           desktopRender={() => this.desktopRender()}
         />

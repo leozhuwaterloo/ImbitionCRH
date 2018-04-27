@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import uuid
+from datetime import date
 
 class Permission(models.Model):
     PERMISSION_VIEW = 1
@@ -60,10 +61,34 @@ class Position(models.Model):
         return self.name
 
 class Employee(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employee')
     phone = models.CharField(max_length=30, null=True, unique=True)
     portrait = models.FileField(upload_to='portrait/', null=True)
-    position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True, related_name="employees")
+    position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
 
     def __str__(self):
         return self.user.last_name + self.user.first_name + ' - ' + self.user.username
+
+class RecordField(models.Model):
+    position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True, related_name="record_fields")
+    name = models.CharField(max_length=50, null=False)
+
+    class Meta:
+        unique_together = ('position', 'name', )
+
+    def __str__(self):
+        return self.name + ' - ' + self.position.name
+
+class Record(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=False, blank=True, related_name="records")
+    field = models.ForeignKey(RecordField, on_delete=models.CASCADE, null=False, blank=True, related_name="records")
+    value = models.DecimalField(max_digits=15, decimal_places=5, null=True)
+    sp_value = models.CharField(max_length=100, null=True)
+    date = models.DateField(default=date.today, null=False)
+    last_modified = models.DateTimeField(auto_now=True, null=False)
+
+    class Meta:
+        unique_together = ('field', 'date', 'employee', )
+
+    def __str__(self):
+        return self.employee.user.last_name + self.employee.user.first_name + ' - ' + str(self.field)

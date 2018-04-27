@@ -28,9 +28,18 @@ NAMES.EMPLOYEE_SAVE = '保存';
 NAMES.EMPLOYEE_NAME = '名字';
 NAMES.EMPLOYEE_PORTRAIT = '员工头像';
 
-NAMES.RECORD_EDIT = '日志调看';
+NAMES.RECORD_EDIT = '日志分属';
+NAMES.RECORD_FIELD_ADD = '添加记录';
+NAMES.RECORD_FIELD_DELETE = '删除记录';
+NAMES.RECORD_FIELD_DELETE_CONFIRM = recordFieldName => `你确定要删除(${recordFieldName})这个记录么? (注意数据也会被删除)`;
+NAMES.RECORD_SELF_EDIT = '日志编辑';
+
 NAMES.DEPARTMENT_EDIT = '部门分配';
 NAMES.DEPARTMENT = '部门';
+NAMES.DEPARTMENT_ADD = '添加部门';
+NAMES.DEPARTMENT_DELETE = '删除部门';
+NAMES.DEPARTMENT_DELETE_CONFIRM = departmentName => `你确定要删除(${departmentName})这个部门么?`;
+NAMES.DEPARTMENT_SAVE_ALL = '保存全部';
 
 NAMES.SUMMARY = '数据统计';
 NAMES.ANALYSIS = '数据分析';

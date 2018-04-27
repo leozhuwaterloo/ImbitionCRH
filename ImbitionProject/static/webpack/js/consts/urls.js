@@ -5,6 +5,7 @@ URLS.LOGIN_FIRST = `${URLS.LOGIN}first/`;
 URLS.LOGIN_OTHER = `${URLS.LOGIN}other/`;
 URLS.LOGOUT = `${URLS.ROOT}logout/`;
 URLS.RECORD_EDIT = `${URLS.ROOT}record/edit/`;
+URLS.RECORD_SELF_EDIT = `${URLS.ROOT}record/self/`;
 URLS.EMPLOYEE_EDIT = `${URLS.ROOT}employee/edit/`;
 URLS.PERMISSION_EDIT = `${URLS.ROOT}permission/edit/`;
 URLS.POSITION_TREE_VIEW = `${URLS.ROOT}position/tree/`;

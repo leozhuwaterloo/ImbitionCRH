@@ -1,4 +1,4 @@
-from imbition.models import Permission, Department, Position, Employee
+from imbition.models import Permission, Department, Position, Employee, RecordField, Record
 from rest_framework import serializers
 from django.contrib.auth.models import User
 
@@ -14,7 +14,7 @@ class DepartmentListAndCreateSerializer(serializers.ModelSerializer):
 class PositionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
-        fields = ('id', 'name', 'department')
+        fields = ('id', 'name', 'department', 'record_fields')
     department = DepartmentListAndCreateSerializer()
 
 # Continue Department
@@ -122,11 +122,34 @@ class EmployeeUpdateSerializer(serializers.ModelSerializer):
         return instance
 
 
+# Record Field
+class RecordFieldAllSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecordField
+        fields = ('id', 'position', 'name')
+
 # Special Serializers
 class PositionPermissionListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
         fields = ('id', 'name', 'parent', 'department', 'permissions')
+
+class PositionRecordFieldListandDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Position
+        fields = ('id', 'name', 'department', 'record_fields')
+    record_fields = RecordFieldAllSerializer(many=True)
+
+class RecordListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Record
+        fields = ('field', 'value', 'sp_value', 'date')
+class EmployeeRecordDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = ('id', 'user', 'position', 'records')
+    user = UserListSerializer()
+    records = RecordListSerializer(many=True)
 
 class PositionTreeSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,5 +1,6 @@
 .side-nav {
   width: 220px;
+  min-height: calc(100vh - 43px);
   position: fixed;
 }
 
@@ -11,7 +12,7 @@ label.w-1{
   width: 80px;
 }
 
-select.w-1{
+input.w-1, select.w-1{
   width: 200px;
 }
 

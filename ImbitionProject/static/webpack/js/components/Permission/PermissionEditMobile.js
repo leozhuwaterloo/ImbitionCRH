@@ -10,7 +10,9 @@ class PermissionEditMobile extends React.Component {
     super(props);
     this.modalId = 'permissionModal';
     // state position is changed and used to render changes, when save, changed for pushed
-    this.state = { positions: {}, modalPositionId: null, searchFilter: '' };
+    this.state = {
+      positions: {}, modalPositionId: null, searchFilter: '', departmentFilter: '',
+    };
     // modalPositionId and modalPermissionId for adding permission from modal
     // modalPositionId is in state because it is used for a label in modal
     this.modalPermissionId = null;
@@ -35,10 +37,8 @@ class PermissionEditMobile extends React.Component {
 
     // deletePosition can be called directly from props
 
-    this.lastUpdated = null; // used to display error to the correct card
     this.pushUpdate = (positionId) => {
       this.props.updatePositionPermission(positionId, this.state.positions[positionId]);
-      this.lastUpdated = positionId;
     };
 
     this.addPermission = (positionId, permissionId) => {
@@ -62,10 +62,8 @@ class PermissionEditMobile extends React.Component {
       [this.modalPermissionId] = Object.keys(nextProps.permissions);
     }
     if (Object.keys(nextProps.positions).length !== 0) {
-      const [firstPositionId] = Object.keys(nextProps.positions);
       this.setState({
         positions: nextProps.positions,
-        modalPositionId: firstPositionId,
       });
     }
   }
@@ -74,37 +72,45 @@ class PermissionEditMobile extends React.Component {
     return (
       <div>
         <div className="container-fluid mt-4">
-          <div className="center-display">
-            <input
-              className="form-control mr-2"
-              type="search"
-              placeholder={NAMES.POSITION_SEARCH}
-              aria-label="Search"
-              onChange={(event) => {
-                this.setState({ searchFilter: event.target.value });
-              }}
-              value={this.state.searchFilter}
-            />
-          </div>
-          <div className="row mt-3">
-            {
-              Object.keys(this.state.positions).map((positionId) => {
-                const position = this.state.positions[positionId];
-                if (this.state.searchFilter
-                  && !position.name.toLowerCase().includes(this.state.searchFilter.toLowerCase())) return null;
-                return (
-                  <div className={this.props.cardClassName} key={positionId}>
-                    <div className="card mb-3">
+          <div className="ml-4 mr-4">
+            <div className="row mb-3">
+              <input
+                className="form-control col-6"
+                type="search"
+                placeholder={NAMES.POSITION_SEARCH}
+                aria-label="Search"
+                onChange={(event) => {
+                  this.setState({ searchFilter: event.target.value });
+                }}
+                value={this.state.searchFilter}
+              />
+              <MySelect
+                displayField="name"
+                canBeNull
+                className="col-6"
+                list={this.props.departments}
+                onChange={event => this.setState({ departmentFilter: parseInt(event.target.value, 10) })}
+                value={this.state.departmentFilter}
+              />
+            </div>
+            <div className="row">
+              {Object.keys(this.state.positions).map((positionId) => {
+                  const position = this.state.positions[positionId];
+                  if (this.state.searchFilter
+                    && !position.name.toLowerCase().includes(this.state.searchFilter.toLowerCase())) return null;
+                  if (this.state.departmentFilter
+                    && position.department !== this.state.departmentFilter) return null;
+                  return (
+                    <div className={`card mb-3 p-0 ${this.props.cardClassName}`} key={positionId}>
                       <div className="card-header center-display bg-dark text-light pb-1 pl-1 pr-1">
                         <TextInput
                           labelClassName="mr-1"
                           containerClassName="mb-2 col-5"
                           name="name"
                           label={NAMES.POSITION}
-                          error={(this.lastUpdated
-                            && this.lastUpdated === positionId
-                            && this.props.errors.name
-                            && translate(this.props.errors.name[0])) || ''}
+                          error={(this.props.errors[positionId]
+                            && this.props.errors[positionId].name
+                            && translate(this.props.errors[positionId].name[0])) || ''}
                           onChange={event => this.handleInputChange(event, positionId)}
                           value={position.name}
                         />
@@ -123,8 +129,7 @@ class PermissionEditMobile extends React.Component {
                         />
                       </div>
                       <div className="card-body">
-                        {
-                          position.permissions.map((permissionId) => {
+                        {position.permissions.map((permissionId) => {
                             const permission = this.props.permissions[permissionId];
                             if (!permission) return null; // if permissions not received yet
                             return (
@@ -139,8 +144,7 @@ class PermissionEditMobile extends React.Component {
                               </div>
 
                             );
-                          })
-                        }
+                          })}
                       </div>
                       <div className="card-footer d-flex bg-light">
                         <button
@@ -174,25 +178,25 @@ class PermissionEditMobile extends React.Component {
                         </button>
                       </div>
                     </div>
-                  </div>
-                );
-              })
-            }
-          </div>
-          <div className="row center-display">
-            <button
-              type="button"
-              className="btn btn-info"
-              data-toggle="modal"
-              data-target={`#${this.modalId}-2`}
-            >
-              <FaPlus />{NAMES.POSITION_ADD}
-            </button>
+                  );
+                })}
+            </div>
+            <div className="row center-display">
+              <button
+                type="button"
+                className="btn btn-info"
+                data-toggle="modal"
+                data-target={`#${this.modalId}-2`}
+              >
+                <FaPlus />{NAMES.POSITION_ADD}
+              </button>
+            </div>
           </div>
         </div>
         <MyModal
           id={`${this.modalId}-1`}
           title={`${NAMES.PERMISSION_ADD} (${this.state.modalPositionId
+            && this.props.positions[this.state.modalPositionId]
             && this.props.positions[this.state.modalPositionId].name})`}
           body={
             <MySelect
@@ -212,8 +216,9 @@ class PermissionEditMobile extends React.Component {
             <TextInput
               name="name"
               label=""
-              error={(this.props.createerrors.name
-                && translate(this.props.createerrors.name[0])) || ''}
+              error={(this.props.createerrors.permissionedit
+                && this.props.createerrors.permissionedit.name
+                && translate(this.props.createerrors.permissionedit.name[0])) || ''}
               onChange={(event) => {
                 this.newPositionName = event.target.value;
               }}
@@ -224,9 +229,11 @@ class PermissionEditMobile extends React.Component {
         <MyModal
           id={`${this.modalId}-3`}
           title={`${NAMES.POSITION_DELETE} (${this.state.modalPositionId
+            && this.props.positions[this.state.modalPositionId]
             && this.props.positions[this.state.modalPositionId].name})`}
           body={
             <p>{NAMES.POSITION_DELETE_CONFIRM(this.state.modalPositionId
+            && this.props.positions[this.state.modalPositionId]
             && this.props.positions[this.state.modalPositionId].name)}
             </p>
           }
@@ -240,6 +247,7 @@ class PermissionEditMobile extends React.Component {
 PermissionEditMobile.propTypes = {
   positions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   permissions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  departments: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
   errors: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   createerrors: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   updatePositionPermission: PropTypes.func.isRequired,

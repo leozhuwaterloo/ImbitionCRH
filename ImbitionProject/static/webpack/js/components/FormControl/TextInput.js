@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const TextInput = ({
-  name, label, error, className, containerClassName, labelClassName, type, ...rest
+  name, label, error, className, containerClassName, labelClassName, inputClassName, type, ...rest
 }) => {
   const id = `id_${name}`;
   return (
@@ -11,7 +11,7 @@ const TextInput = ({
       <div className={className}>
         <input
           type={type}
-          className={`form-control ${error ? 'is-invalid' : ''}`}
+          className={`form-control ${error ? 'is-invalid' : ''} ${inputClassName}`}
           id={id}
           name={name}
           {...rest}
@@ -31,6 +31,7 @@ TextInput.propTypes = {
   className: PropTypes.string,
   containerClassName: PropTypes.string,
   labelClassName: PropTypes.string,
+  inputClassName: PropTypes.string,
 };
 
 TextInput.defaultProps = {
@@ -40,6 +41,7 @@ TextInput.defaultProps = {
   className: '',
   containerClassName: '',
   labelClassName: '',
+  inputClassName: '',
 };
 
 export default TextInput;

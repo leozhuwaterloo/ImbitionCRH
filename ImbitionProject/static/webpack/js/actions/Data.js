@@ -14,7 +14,7 @@ export const FETCH_REQUEST = '@@data/FETCH_REQUEST',
   DELETE_SUCCESS = '@@data/DELETE_SUCCESS',
   DELETE_FAILURE = '@@data/DELETE_FAILURE';
 
-function apiRequest(method, requestTag, successTag, failureTag, target, body) {
+function apiRequest(method, requestTag, successTag, failureTag, target, body, key, callback) {
   return {
     [RSAA]: {
       endpoint: `/api/imbition/${target}/`,
@@ -24,23 +24,41 @@ function apiRequest(method, requestTag, successTag, failureTag, target, body) {
       types: [
         requestTag, successTag, failureTag,
       ],
+      fetch: async (...args) => {
+        const res = await fetch(...args),
+          json = await res.json();
+
+        let newJson = {};
+        if (key) newJson[key] = json;
+        else newJson = json;
+
+        if (callback) callback(newJson);
+        return new Response(
+          JSON.stringify(newJson),
+          {
+            status: res.status,
+            statusText: res.statusText,
+            headers: res.headers,
+          },
+        );
+      },
     },
   };
 }
 
 
-export function fetchData(target) {
-  return apiRequest('GET', FETCH_REQUEST, FETCH_SUCCESS, FETCH_FAILURE, target, null);
+export function fetchData(target, key, callback) {
+  return apiRequest('GET', FETCH_REQUEST, FETCH_SUCCESS, FETCH_FAILURE, target, null, key, callback);
 }
 
-export function updateData(target, body) {
-  return apiRequest('PUT', UPDATE_REQUEST, UPDATE_SUCCESS, UPDATE_FAILURE, target, body);
+export function updateData(target, body, key, callback) {
+  return apiRequest('PUT', UPDATE_REQUEST, UPDATE_SUCCESS, UPDATE_FAILURE, target, body, key, callback);
 }
 
-export function createData(target, body) {
-  return apiRequest('POST', CREATE_REQUEST, CREATE_SUCCESS, CREATE_FAILURE, target, body);
+export function createData(target, body, key, callback) {
+  return apiRequest('POST', CREATE_REQUEST, CREATE_SUCCESS, CREATE_FAILURE, target, body, key, callback);
 }
 
-export function deleteData(target) {
-  return apiRequest('DELETE', DELETE_REQUEST, DELETE_SUCCESS, DELETE_FAILURE, target, null);
+export function delData(target, key, callback) {
+  return apiRequest('DELETE', DELETE_REQUEST, DELETE_SUCCESS, DELETE_FAILURE, target, null, key, callback);
 }

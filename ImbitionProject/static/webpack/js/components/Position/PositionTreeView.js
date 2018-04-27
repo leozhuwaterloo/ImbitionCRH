@@ -42,18 +42,9 @@ class PositionTreeViewDumb extends React.Component {
       this.updateTree(d);
     };
 
-    this.tryCreate = () => {
-      if (Object.keys(this.props.positiontree).length !== 0) {
-        this.createTree(this.props.positiontree);
-      } else {
-        setTimeout(() => this.tryCreate(), 100);
-      }
-    };
-
     this.tryFetch = () => {
       if (this.props.positionId !== -1) {
-        this.props.fetchPositionTree(this.props.positionId);
-        setTimeout(() => this.tryCreate(), 200);
+        this.props.fetchPositionTree(this.props.positionId, data => this.createTree(data.positiontree));
       } else {
         setTimeout(() => this.tryFetch(), 100);
       }
@@ -189,17 +180,17 @@ class PositionTreeViewDumb extends React.Component {
 
 
 PositionTreeViewDumb.propTypes = {
-  positiontree: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   positionId: PropTypes.number.isRequired,
   fetchPositionTree: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
-    positiontree: state.data.positiontree,
     positionId: (state.data.user && state.data.user.position && state.data.user.position.id) || -1,
   }),
   mapDispatchToProps = dispatch => ({
-    fetchPositionTree: positionId => dispatch(fetchData(`positiontree/${positionId}`)),
+    fetchPositionTree: (positionId, callback) => {
+      dispatch(fetchData(`positiontree/${positionId}`, 'positiontree', callback));
+    },
   }),
   PositionTreeView = connect(mapStateToProps, mapDispatchToProps)(PositionTreeViewDumb);
 

@@ -37,6 +37,7 @@ class SideNavWrapperDumb extends React.Component {
                     <div className="rounded-circle center-display bg-secondary mt-1 mb-2">
                       <img src={user.portrait} alt="头像" />
                     </div>
+                    <FontAwesome.FaAngleRight className="float-right" />
                     <div className="text-light">{user.user.last_name}{user.user.first_name}</div>
                     {user.position ? <div className="text-secondary">{user.position.name}</div> : ''}
                   </div>
@@ -51,7 +52,7 @@ class SideNavWrapperDumb extends React.Component {
                 </Link>
               </li>
               <li className="nav-item ml-3 mr-3">
-                <a className="nav-link text-secondary" href="#">
+                <a className="nav-link text-secondary" href="#settings">
                   <FontAwesome.FaCogs className="mb-1 mr-1" />{NAMES.SETTINGS}
                 </a>
               </li>
@@ -59,6 +60,11 @@ class SideNavWrapperDumb extends React.Component {
             </div>
             <div className="m-3">
               <li className="nav-item mb-1" style={{ fontSize: '0.8rem' }}>{NAMES.NAVIGATION_PANEL}</li>
+              <li className="nav-item">
+                <Link className="nav-link text-secondary" to={URLS.RECORD_SELF_EDIT}>
+                  <FontAwesome.FaLeanpub className="mb-1 mr-1" />{NAMES.RECORD_SELF_EDIT}
+                </Link>
+              </li>
               <li
                 className="nav-item"
                 data-toggle="collapse"
@@ -67,7 +73,7 @@ class SideNavWrapperDumb extends React.Component {
                 aria-controls="edit"
               >
                 <a className="nav-link text-secondary" href="#view">
-                  <FontAwesome.FaEdit className="mb-1 mr-1" />{NAMES.VIEW}
+                  <FontAwesome.FaInbox className="mb-1 mr-1" />{NAMES.VIEW}
                   <FontAwesome.FaAngleRight className="float-right" />
                 </a>
               </li>
@@ -141,7 +147,7 @@ const mapStateToProps = state => ({
     userId: getUserId(state),
   }),
   mapDispatchToProps = dispatch => ({
-    fetchUser: userId => dispatch(fetchData(`user/${userId}`)),
+    fetchUser: userId => dispatch(fetchData(`user/${userId}`, 'user')),
   }),
   SideNavWrapper = connect(mapStateToProps, mapDispatchToProps)(SideNavWrapperDumb);
 

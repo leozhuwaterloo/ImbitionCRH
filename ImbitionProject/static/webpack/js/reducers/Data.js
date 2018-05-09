@@ -23,6 +23,7 @@ const initialState = {
   employeerecord: {},
   employee: {},
   department: {},
+  record: {},
   positiontree: {},
 };
 

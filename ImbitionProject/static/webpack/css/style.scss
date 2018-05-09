@@ -1,3 +1,5 @@
+@import "~react-datepicker/dist/react-datepicker.min.css";
+@import "~react-bootstrap-table/dist/react-bootstrap-table.min.css";
 @import './base-bootstrap.scss';
 
 body {
@@ -52,6 +54,15 @@ label {
 
 a {
   transition: color 0.25s ease;
+}
+
+.number-filter-comparator {
+  width: 50px !important;
+  padding: 0px 5px;
+}
+
+.number-filter-input {
+  width: calc(100% - 50px - 5px) !important;
 }
 
 

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import MainPage from './MainPage';
 import MyNavbar from './MyNavbar';
-import { RecordEdit, RecordSelfEdit } from './Record';
+import { RecordEdit, RecordSelfEdit, RecordView } from './Record';
 import EmployeeEdit from './Employee';
 import PermissionEdit from './Permission';
 import PositionTreeView from './Position';
@@ -31,8 +31,9 @@ class AppDumb extends React.Component {
               <Route exact path={URLS.ROOT} component={MainPage} />
               <Route path={URLS.RECORD_EDIT} component={RecordEdit} />
               <Route path={URLS.RECORD_SELF_EDIT} component={RecordSelfEdit} />
+              <Route path={URLS.RECORD_VIEW} component={RecordView} />
               <Route path={URLS.EMPLOYEE_EDIT} component={EmployeeEdit} />
-              <Route exact path={URLS.POSITION_TREE_VIEW} component={PositionTreeView} />
+              <Route path={URLS.POSITION_TREE_VIEW} component={PositionTreeView} />
               <Route path={URLS.PERMISSION_EDIT} component={PermissionEdit} />
               <Route path={URLS.DEPARTMENT_EDIT} component={DepartmentEdit} />
               <Route path={URLS.SUMMARY} component={MainPage} />

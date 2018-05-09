@@ -32,6 +32,8 @@ router.register(r'api/imbition/permission', imbition_views.PermissionViewSet)
 router.register(r'api/imbition/position', imbition_views.PositionViewSet)
 router.register(r'api/imbition/department', imbition_views.DepartmentViewSet)
 router.register(r'api/imbition/recordfield', imbition_views.RecordFieldViewSet)
+router.register(r'api/imbition/record', imbition_views.RecordViewSet)
+
 
 router.register(r'api/imbition/positionpermission', imbition_views.PositionPermissionViewSet)
 router.register(r'api/imbition/positionrecord', imbition_views.PositionRecordFieldViewSet)

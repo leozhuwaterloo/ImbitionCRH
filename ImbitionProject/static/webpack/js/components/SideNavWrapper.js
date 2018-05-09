@@ -79,6 +79,11 @@ class SideNavWrapperDumb extends React.Component {
               </li>
               <div className="collapse" id="view">
                 <li className="nav-item ml-3 mr-3">
+                  <Link className="nav-link text-secondary" to={URLS.RECORD_VIEW}>
+                    <FontAwesome.FaCalendar className="mb-1 mr-1" />{NAMES.RECORD_VIEW}
+                  </Link>
+                </li>
+                <li className="nav-item ml-3 mr-3">
                   <Link className="nav-link text-secondary" to={URLS.POSITION_TREE_VIEW}>
                     <FontAwesome.FaTree className="mb-1 mr-1" />{NAMES.POSITION_TREE_VIEW}
                   </Link>
@@ -122,7 +127,7 @@ class SideNavWrapperDumb extends React.Component {
           </ul>
           <div className="content fill-container">
             {this.props.children}
-            <div className="container-fluid center-display text-secondary mt-5 mb-4">
+            <div className="container-fluid center-display text-secondary mt-4 mb-4">
               {NAMES.FOOTER_TEXT}
             </div>
           </div>

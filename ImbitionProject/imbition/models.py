@@ -7,15 +7,16 @@ from datetime import date
 class Permission(models.Model):
     PERMISSION_VIEW = 1
     PERMISSION_CHANGE = 2
-    PERMISSION_ADD_DELETE = 3
     PERMISSION_CHOICES = (
         (PERMISSION_VIEW, '查看'),
         (PERMISSION_CHANGE, '修改'),
-        (PERMISSION_ADD_DELETE, '添加与删除'),
     )
     description = models.CharField(max_length=150, null=False, unique=True)
     position = models.ForeignKey('Position', on_delete=models.CASCADE, null=False, blank=False, related_name='accessed_by')
     permission = models.IntegerField(choices=PERMISSION_CHOICES, null=False)
+
+    class Meta:
+        unique_together = ('position', 'permission', )
 
     def save(self, *args, **kwargs):
         self.description = self.PERMISSION_CHOICES[self.permission-1][1] + self.position.name
@@ -44,8 +45,6 @@ class Position(models.Model):
             position_permission = Permission.objects.filter(position=self)
             if not position_permission.filter(permission=Permission.PERMISSION_VIEW).exists():
                 Permission(position=self, permission=Permission.PERMISSION_VIEW).save()
-            if not position_permission.filter(permission=Permission.PERMISSION_ADD_DELETE).exists():
-                Permission(position=self, permission=Permission.PERMISSION_ADD_DELETE).save()
             if not position_permission.filter(permission=Permission.PERMISSION_CHANGE).exists():
                 new_permission = Permission(position=self, permission=Permission.PERMISSION_CHANGE)
                 new_permission.save()
@@ -72,6 +71,7 @@ class Employee(models.Model):
 class RecordField(models.Model):
     position = models.ForeignKey(Position, on_delete=models.SET_NULL, null=True, blank=True, related_name="record_fields")
     name = models.CharField(max_length=50, null=False)
+    unit = models.CharField(max_length=10, null=True)
 
     class Meta:
         unique_together = ('position', 'name', )
@@ -83,7 +83,7 @@ class Record(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, null=False, blank=True, related_name="records")
     field = models.ForeignKey(RecordField, on_delete=models.CASCADE, null=False, blank=True, related_name="records")
     value = models.DecimalField(max_digits=15, decimal_places=5, null=True)
-    sp_value = models.CharField(max_length=100, null=True)
+    comment = models.CharField(max_length=200, null=True)
     date = models.DateField(default=date.today, null=False)
     last_modified = models.DateTimeField(auto_now=True, null=False)
 

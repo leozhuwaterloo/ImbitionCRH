@@ -7,7 +7,7 @@ const TextInput = ({
   const id = `id_${name}`;
   return (
     <div className={`form-group center-display m-0 ${containerClassName}`}>
-      {label ? <label htmlFor={id} className={`m-0 ${labelClassName}`}>{label}</label> : ''}
+      {label ? <label htmlFor={`#${id}`} className={`m-0 ${labelClassName}`}>{label}</label> : ''}
       <div className={className}>
         <input
           type={type}

@@ -3,5 +3,5 @@ import { Redirect } from 'react-router';
 import { URLS } from '../../consts';
 
 export default () => (
-  <Redirect to={URLS.RECORD_EDIT} />
+  <Redirect to={URLS.RECORD_VIEW} />
 );

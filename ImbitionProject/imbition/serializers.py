@@ -1,6 +1,9 @@
 from imbition.models import Permission, Department, Position, Employee, RecordField, Record
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+from imbition.permissions import get_changable
+from django.core.exceptions import PermissionDenied
 
 # Edit Serializer are for both create and update
 
@@ -18,7 +21,37 @@ class PositionListSerializer(serializers.ModelSerializer):
     department = DepartmentListAndCreateSerializer()
 
 # Continue Department
-class DepartmentDetailAndUpdateSerializer(serializers.ModelSerializer):
+class DepartmentDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ('id', 'name', 'positions')
+    positions = serializers.SerializerMethodField()
+    def get_positions(self, obj):
+        positions = self.context.get('positions')
+        if positions is not None:
+            return positions
+        else:
+            return obj.positions.values_list('id', flat=True)
+
+class DepartmentUpdateAddSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ('id', 'name', 'positions')
+    def update(self, instance, validated_data, **kwargs):
+        # We dont need bypass for admin user as they call replace directly
+        request = self.context.get('request', None)
+        changable = []
+        if request and request.user and request.user.employee and request.user.employee.position:
+            changable = get_changable(request.user.employee.position)
+        positions = validated_data.get('positions', [])
+        for position in positions:
+            if position in changable:
+                position.department = instance
+                position.save()
+        instance.save()
+        return instance
+
+class DepartmentUpdateReplaceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Department
         fields = ('id', 'name', 'positions')
@@ -126,7 +159,13 @@ class EmployeeUpdateSerializer(serializers.ModelSerializer):
 class RecordFieldAllSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecordField
-        fields = ('id', 'position', 'name')
+        fields = ('id', 'position', 'name', 'unit')
+
+# Record
+class RecordAllSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Record
+        fields = ('id', 'employee', 'field', 'value', 'comment', 'date')
 
 # Special Serializers
 class PositionPermissionListSerializer(serializers.ModelSerializer):
@@ -140,16 +179,19 @@ class PositionRecordFieldListandDetailSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'department', 'record_fields')
     record_fields = RecordFieldAllSerializer(many=True)
 
-class RecordListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Record
-        fields = ('field', 'value', 'sp_value', 'date')
+
 class EmployeeRecordDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = ('id', 'user', 'position', 'records')
     user = UserListSerializer()
-    records = RecordListSerializer(many=True)
+    records = serializers.SerializerMethodField()
+
+    def get_records(self, obj):
+        date = self.context.get('date')
+        if date:
+            return RecordAllSerializer(obj.records.filter(date=date), many=True).data
+        return RecordAllSerializer(obj.records, many=True).data
 
 class PositionTreeSerializer(serializers.ModelSerializer):
     class Meta:

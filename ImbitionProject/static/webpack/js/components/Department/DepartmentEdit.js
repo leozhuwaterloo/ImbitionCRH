@@ -69,7 +69,7 @@ const mapStateToProps = (state) => {
     createDepartment: (name) => {
       dispatch(createData('department', { name }, 'departmentedit', (data) => {
         dispatch(fetchData('department', 'departments'));
-        dispatch(fetchData(`department/${data.departmentedit.id}`, 'department'));
+        if (data.departmentedit.id) dispatch(fetchData(`department/${data.departmentedit.id}`, 'department'));
       }));
     },
     deleteDepartment: (departmentId) => {

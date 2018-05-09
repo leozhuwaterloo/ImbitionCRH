@@ -14,10 +14,10 @@ export const FETCH_REQUEST = '@@data/FETCH_REQUEST',
   DELETE_SUCCESS = '@@data/DELETE_SUCCESS',
   DELETE_FAILURE = '@@data/DELETE_FAILURE';
 
-function apiRequest(method, requestTag, successTag, failureTag, target, body, key, callback) {
+function apiRequest(method, requestTag, successTag, failureTag, target, body, key, callback, query) {
   return {
     [RSAA]: {
-      endpoint: `/api/imbition/${target}/`,
+      endpoint: `/api/imbition/${target}/${query ? `?${query}` : ''}`,
       method,
       body: body && JSON.stringify(body),
       headers: withAuth({ 'Content-Type': 'application/json' }),
@@ -47,18 +47,18 @@ function apiRequest(method, requestTag, successTag, failureTag, target, body, ke
 }
 
 
-export function fetchData(target, key, callback) {
-  return apiRequest('GET', FETCH_REQUEST, FETCH_SUCCESS, FETCH_FAILURE, target, null, key, callback);
+export function fetchData(target, key, callback, query) {
+  return apiRequest('GET', FETCH_REQUEST, FETCH_SUCCESS, FETCH_FAILURE, target, null, key, callback, query);
 }
 
 export function updateData(target, body, key, callback) {
-  return apiRequest('PUT', UPDATE_REQUEST, UPDATE_SUCCESS, UPDATE_FAILURE, target, body, key, callback);
+  return apiRequest('PUT', UPDATE_REQUEST, UPDATE_SUCCESS, UPDATE_FAILURE, target, body, key, callback, null);
 }
 
 export function createData(target, body, key, callback) {
-  return apiRequest('POST', CREATE_REQUEST, CREATE_SUCCESS, CREATE_FAILURE, target, body, key, callback);
+  return apiRequest('POST', CREATE_REQUEST, CREATE_SUCCESS, CREATE_FAILURE, target, body, key, callback, null);
 }
 
 export function delData(target, key, callback) {
-  return apiRequest('DELETE', DELETE_REQUEST, DELETE_SUCCESS, DELETE_FAILURE, target, null, key, callback);
+  return apiRequest('DELETE', DELETE_REQUEST, DELETE_SUCCESS, DELETE_FAILURE, target, null, key, callback, null);
 }

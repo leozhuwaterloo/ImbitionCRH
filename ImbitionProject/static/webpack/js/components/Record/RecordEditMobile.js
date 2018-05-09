@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import FaPlus from 'react-icons/lib/fa/plus';
 import FaMinusCircle from 'react-icons/lib/fa/minus-circle';
+import FaEdit from 'react-icons/lib/fa/edit';
 import { TextInput, MyModal, MySelect } from '../FormControl';
 import { NAMES, translate } from '../../consts';
 
@@ -9,10 +10,15 @@ class RecordEditMobile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modalPositionId: null, modalRecordField: null, searchFilter: '', departmentFilter: '',
+      modalPositionId: null,
+      modalRecordField: null,
+      searchFilter: '',
+      departmentFilter: '',
+      modalEdit: false,
+      newRecordFieldName: '',
+      newRecordFieldUnit: '',
     };
     this.modalId = 'recordedit';
-    this.newRecordFieldName = '';
   }
 
   render() {
@@ -53,14 +59,30 @@ class RecordEditMobile extends React.Component {
                     <div className="card-body">
                       {position.record_fields.map(recordField => (
                         <div key={recordField.id}>
-                          <span>{recordField.name}</span>
+                          <a
+                            href="#edit"
+                            data-toggle="modal"
+                            data-target={`#${this.modalId}-1`}
+                            onClick={() => this.setState({
+                              modalRecordField: recordField,
+                              modalPositionId: positionId,
+                              modalEdit: true,
+                              newRecordFieldName: recordField.name,
+                              newRecordFieldUnit: recordField.unit || '',
+                            })}
+                          >
+                            <FaEdit className="text-success" size={20} />
+                          </a>
+                          <span className="mr-3 ml-1">
+                            {recordField.name}{(recordField.unit && ` (${recordField.unit})`) || ''}
+                          </span>
                           <a
                             href="#remove"
                             data-toggle="modal"
                             data-target={`#${this.modalId}-2`}
                             onClick={() => this.setState({ modalRecordField: recordField })}
                           >
-                            <FaMinusCircle className="text-danger ml-3 mb-1" size={20} />
+                            <FaMinusCircle className="text-danger mb-1" size={20} />
                           </a>
                         </div>
                       ))}
@@ -71,7 +93,7 @@ class RecordEditMobile extends React.Component {
                         className="btn btn-info"
                         data-toggle="modal"
                         data-target={`#${this.modalId}-1`}
-                        onClick={() => this.setState({ modalPositionId: positionId })}
+                        onClick={() => this.setState({ modalPositionId: positionId, modalEdit: false })}
                       >
                         <FaPlus />{NAMES.RECORD_FIELD_ADD}
                       </button>
@@ -84,23 +106,51 @@ class RecordEditMobile extends React.Component {
         </div>
         <MyModal
           id={`${this.modalId}-1`}
-          title={`${NAMES.RECORD_FIELD_ADD} (${this.state.modalPositionId
+          title={`${(this.state.modalEdit ? NAMES.RECORD_FIELD_UPDATE
+            : NAMES.RECORD_FIELD_ADD)} (${this.state.modalPositionId
             && this.props.positions[this.state.modalPositionId].name})`}
-          body={<TextInput
-            name="name"
-            label=""
-            error={(this.props.createerrors.recordedit
-              && this.props.createerrors.recordedit.name
-              && translate(this.props.createerrors.recordedit.name[0])) || ''}
-            onChange={(event) => {
-              this.newRecordFieldName = event.target.value;
-            }}
-          />}
+          body={
+            <div className="center-display">
+              <TextInput
+                name="name"
+                inputClassName="ml-1"
+                label={NAMES.RECORD_FIELD_NAME}
+                error={(!this.state.modalEdit && this.props.createerrors.recordedit
+                  && this.props.createerrors.recordedit.non_field_errors
+                  && translate(this.props.createerrors.recordedit.non_field_errors[0]))
+                  || (this.state.modalEdit && this.props.updateerrors.recordedit
+                    && this.props.updateerrors.recordedit.non_field_errors
+                    && translate(this.props.updateerrors.recordedit.non_field_errors[0])) || ''}
+                onChange={(event) => {
+                  this.setState({ newRecordFieldName: event.target.value });
+                }}
+                value={this.state.newRecordFieldName}
+              />
+              <TextInput
+                name="unit"
+                inputClassName="ml-1"
+                containerClassName="ml-3"
+                label={NAMES.RECORD_FIELD_UNIT}
+                error={(!this.state.modalEdit && this.props.createerrors.recordedit
+                  && this.props.createerrors.recordedit.unit
+                  && translate(this.props.createerrors.recordedit.unit[0]))
+                  || (this.state.modalEdit && this.props.updateerrors.recordedit
+                    && this.props.updateerrors.recordedit.unit
+                    && translate(this.props.updateerrors.recordedit.unit[0])) || ''}
+                onChange={(event) => {
+                  this.setState({ newRecordFieldUnit: event.target.value });
+                }}
+                value={this.state.newRecordFieldUnit}
+              />
+            </div>}
           onSubmit={() => {
-            this.props.createRecordField({
+            const res = {
               position: this.state.modalPositionId,
-              name: this.newRecordFieldName,
-            });
+              name: this.state.newRecordFieldName,
+              unit: this.state.newRecordFieldUnit || null,
+            };
+            if (this.state.modalEdit) this.props.updateRecordField(this.state.modalRecordField.id, res);
+            else this.props.createRecordField(res);
           }}
         />
         <MyModal
@@ -123,7 +173,9 @@ RecordEditMobile.propTypes = {
   positions: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   departments: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
   createerrors: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  updateerrors: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   createRecordField: PropTypes.func.isRequired,
+  updateRecordField: PropTypes.func.isRequired,
   deleteRecordField: PropTypes.func.isRequired,
   cardClassName: PropTypes.string,
 };

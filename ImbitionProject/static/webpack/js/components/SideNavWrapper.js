@@ -52,9 +52,9 @@ class SideNavWrapperDumb extends React.Component {
                 </Link>
               </li>
               <li className="nav-item ml-3 mr-3">
-                <a className="nav-link text-secondary" href="#settings">
+                <Link className="nav-link text-secondary" to={URLS.SETTINGS}>
                   <FontAwesome.FaCogs className="mb-1 mr-1" />{NAMES.SETTINGS}
-                </a>
+                </Link>
               </li>
               <hr className="mb-0" />
             </div>

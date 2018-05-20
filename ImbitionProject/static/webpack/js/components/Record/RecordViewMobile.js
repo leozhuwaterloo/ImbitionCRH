@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import DatePicker from 'react-datepicker';
 import FaCloudDownload from 'react-icons/lib/fa/cloud-download';
 import 'bootstrap/js/dist/dropdown';
 import
 {
   BootstrapTable, TableHeaderColumn, SearchField,
-  SizePerPageDropDown, TableRow, TableHeader,
+  SizePerPageDropDown,
 }
   from 'react-bootstrap-table';
 import { NAMES } from '../../consts';
@@ -14,12 +15,58 @@ import { NAMES } from '../../consts';
 class RecordViewMobile extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { data: [], date: moment(), showComment: {} };
+    this.dateNow = moment();
+    this.state = {
+      startDate: this.dateNow,
+      endDate: this.dateNow,
+      showComment: {},
+    };
     this.options = {
+      noDataText: NAMES.RECORD_VIEW_NO_DATA,
       exportCSVBtn: onClick => (
-        <button className="btn btn-light center-displayp p-1 pl-2 pr-2" onClick={onClick}>
-          <FaCloudDownload className="mr-1" size={20} /> {NAMES.CSV_EXPORT}
-        </button>
+        <div className="center-display">
+          <button className="btn btn-light center-display p-1 pl-2 pr-2" onClick={onClick}>
+            <FaCloudDownload className="mr-1" size={20} /> {NAMES.CSV_EXPORT}
+          </button>
+          <DatePicker
+            id="startDate"
+            className="form-control m-0 ml-3"
+            todayButton={NAMES.TODAY}
+            dateFormat="YYYY-MM-DD"
+            selected={this.state.startDate}
+            selectsStart
+            startDate={this.state.startDate}
+            endDate={this.state.endDate}
+            onChange={(date) => {
+              this.setState({ startDate: date });
+              this.props.fetchRecordSummary(date.format('YYYY-MM-DD'), this.state.endDate.format('YYYY-MM-DD'));
+            }}
+          />
+          <DatePicker
+            id="endDate"
+            className="form-control m-0 ml-3"
+            todayButton={NAMES.TODAY}
+            dateFormat="YYYY-MM-DD"
+            selected={this.state.endDate}
+            selectsEnd
+            startDate={this.state.startDate}
+            endDate={this.state.endDate}
+            onChange={(date) => {
+              this.setState({ endDate: date });
+              this.props.fetchRecordSummary(this.state.startDate.format('YYYY-MM-DD'), date.format('YYYY-MM-DD'));
+            }}
+          />
+          <button
+            className="btn btn-light ml-4"
+            onClick={() => {
+              this.setState({ startDate: this.dateNow, endDate: this.dateNow });
+              const dateNowString = this.dateNow.format('YYYY-MM-DD');
+              this.props.fetchRecordSummary(dateNowString, dateNowString);
+            }}
+          >
+            {NAMES.RECORE_VIEW_DATE_RESET}
+          </button>
+        </div>
       ),
       searchField: () => <SearchField placeholder={NAMES.SEARCH} />,
       sizePerPageDropDown: () => (
@@ -31,48 +78,12 @@ class RecordViewMobile extends React.Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.employees && nextProps.employees.length !== 0
-      && nextProps.recordfields && Object.keys(nextProps.recordfields).length !== 0) {
-      const data = [],
-        fields = {},
-        recordmaps = {},
-        { recordfields, employees } = nextProps,
-        date = this.state.date.format('YYYY-MM-DD'),
-        records = nextProps.record[date] || [];
-      records.forEach((record) => {
-        const field = recordfields[record.field],
-          fieldName = `${field.name}${field.unit ? ` (${field.unit})` : ''}`;
-        fields[fieldName] = field.name;
-        if (!recordmaps[record.employee]) recordmaps[record.employee] = {};
-        recordmaps[record.employee][fieldName] = record;
-      });
-      employees.forEach((employee) => {
-        const employeeData = {};
-        employeeData[NAMES.EMPLOYEE_NAME] = `${employee.user.last_name}${employee.user.first_name}`;
-        employeeData[NAMES.DATE] = date;
-        Object.keys(fields).forEach((fieldName) => {
-          employeeData[fieldName] = (recordmaps[employee.id]
-            && recordmaps[employee.id][fieldName] && recordmaps[employee.id][fieldName].value) || null;
-          employeeData[`${fieldName} ${NAMES.COMMENT}`] = (recordmaps[employee.id]
-            && recordmaps[employee.id][fieldName] && recordmaps[employee.id][fieldName].comment) || null;
-        });
-        data.push(employeeData);
-        data.push(employeeData);
-        data.push(employeeData);
-        data.push(employeeData);
-        data.push(employeeData);
-      });
-      this.setState({ data });
-    }
-  }
-
   render() {
     const tableColumns = [];
-    if (this.state.data[0]) {
+    if (this.props.recordsummary.data && this.props.recordsummary.data[0]) {
       let counter = 0;
-      Object.keys(this.state.data[0]).forEach((key) => {
-        const isNotField = (key === NAMES.EMPLOYEE_NAME || key === NAMES.DATE);
+      this.props.recordsummary.order.forEach((key) => {
+        const isNotField = (key === NAMES.RECORD_VIEW_EMPLOYEE_FULL_NAME || key === NAMES.DATE);
         let rowFilter = { type: 'NumberFilter', numberComparators: ['=', '>', '<='] };
         if (isNotField || counter === 1) rowFilter = { type: 'TextFilter' };
         rowFilter.placeholder = NAMES.FILTER;
@@ -110,12 +121,13 @@ class RecordViewMobile extends React.Component {
             key={key}
             dataSort
             width={(isNotField || this.state.showComment[key]) ? '150' : '300'}
-            isKey={key === NAMES.EMPLOYEE_NAME}
+            isKey={key === NAMES.RECORD_VIEW_EMPLOYEE_FULL_NAME}
             filter={rowFilter}
             row={isNotField ? '0' : '1'}
             rowSpan={isNotField ? '2' : '1'}
             hidden={!isNotField && counter === 0 && !this.state.showComment[key]}
             dataField={key}
+            multiColumnSort={2}
           >
             {key}
           </TableHeaderColumn>
@@ -123,16 +135,15 @@ class RecordViewMobile extends React.Component {
       });
     }
 
-
     return (
       <div className="container-fluid mt-4">
         <div className="ml-2 mr-2">
-          {this.state.data[0] &&
+          {this.props.recordsummary.data && this.props.recordsummary.data[0] &&
             <BootstrapTable
               tableBodyClass="table table-dark"
               tableContainerClass="card"
               version="4"
-              data={this.state.data}
+              data={this.props.recordsummary.data}
               options={this.options}
               exportCSV
               csvFileName={`${NAMES.RECORD_VIEW}.csv`}
@@ -153,9 +164,8 @@ class RecordViewMobile extends React.Component {
 }
 
 RecordViewMobile.propTypes = {
-  employees: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
-  record: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  recordfields: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  recordsummary: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  fetchRecordSummary: PropTypes.func.isRequired,
 };
 
 export default RecordViewMobile;

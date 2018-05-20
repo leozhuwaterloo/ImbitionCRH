@@ -4,7 +4,7 @@ import { createFilter } from 'redux-persist-transform-filter';
 import { persistReducer, persistStore } from 'redux-persist';
 import { routerMiddleware } from 'react-router-redux';
 import rootReducer from './reducers';
-import { apiMiddleware, logger, crashReporter } from './middlewares';
+import { apiMiddleware, logger, notificationMiddleware } from './middlewares';
 
 export default (history) => {
   const persistedFilter = createFilter('auth', ['access', 'refresh']),
@@ -21,8 +21,9 @@ export default (history) => {
     store = createStore(
       reducer, {},
       applyMiddleware(
-        logger, crashReporter,
+        logger,
         apiMiddleware,
+        notificationMiddleware,
         routerMiddleware(history),
       ),
     );

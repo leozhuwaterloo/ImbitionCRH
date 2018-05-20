@@ -38,6 +38,7 @@ class RecordSelfEditMobile extends React.Component {
     const { records, errors } = this.state,
       { user, recordfields } = this.props;
     if (!user || !user.position) return null;
+    if (!recordfields || Object.keys(recordfields).length === 0) return null;
     return (
       <div className="container mt-5 col-8 shadow mb-5 bg-white rounded pt-5 pb-5">
         <div className="ml-3 mr-3">
@@ -51,11 +52,18 @@ class RecordSelfEditMobile extends React.Component {
               selected={this.state.date}
               onChange={(date) => {
                 this.setState({ date });
-                this.props.fetchEmployeeRecord(user, date.format('YYYY-MM-DD'));
+                this.props.fetchEmployeeRecord(user, recordfields, date.format('YYYY-MM-DD'));
               }}
             />
           </div>
-          {user.position.record_fields.map((recordFieldId => (
+          {user.position.record_fields.filter(recordFieldId => !recordfields[recordFieldId].disabled)
+          .sort((a, b) => {
+            if (!recordfields[a]) return 0;
+            if (!recordfields[b]) return 0;
+            if (recordfields[a].order < recordfields[b].order) return -1;
+            if (recordfields[a].order > recordfields[b].order) return 1;
+            return 0;
+          }).map((recordFieldId => (
             <div key={recordFieldId} className="center-display">
               <TextInput
                 name="value"

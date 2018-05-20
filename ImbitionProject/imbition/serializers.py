@@ -1,11 +1,19 @@
-from imbition.models import Permission, Department, Position, Employee, RecordField, Record
+from imbition.models import Permission, Department, Position, Employee, RecordField, Record, PendingEmployee, UserSetting
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
-from imbition.permissions import get_changable
+from imbition.permissions import get_changable, CustomPermissionDenied
 from django.core.exceptions import PermissionDenied
-
+import urllib.request
+from django.core.files.temp import NamedTemporaryFile
+from django.core.files import File
 # Edit Serializer are for both create and update
+
+# UserSetting
+class UserSettingAllSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserSetting
+        fields = ('id', 'user', 'notify_warning', 'notify_success', 'notify_error')
 
 # Department
 class DepartmentListAndCreateSerializer(serializers.ModelSerializer):
@@ -38,18 +46,25 @@ class DepartmentUpdateAddSerializer(serializers.ModelSerializer):
         model = Department
         fields = ('id', 'name', 'positions')
     def update(self, instance, validated_data, **kwargs):
-        # We dont need bypass for admin user as they call replace directly
+        # We dont need to add bypass for admin user as they call replace directly
         request = self.context.get('request', None)
         changable = []
         if request and request.user and request.user.employee and request.user.employee.position:
             changable = get_changable(request.user.employee.position)
         positions = validated_data.get('positions', [])
+        invalid_positions = []
         for position in positions:
             if position in changable:
                 position.department = instance
                 position.save()
+            elif (not position.department) or position.department.id != instance.id:
+                invalid_positions.append(position.name)
         instance.save()
-        return instance
+
+        if not invalid_positions:
+            return instance
+        else:
+            raise CustomPermissionDenied("你没有修改(%s)的权限" % ', '.join(invalid_positions))
 
 class DepartmentUpdateReplaceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -106,16 +121,25 @@ class PositionEditSerializer(serializers.ModelSerializer):
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'last_login', 'date_joined')
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'last_login', 'date_joined', 'setting')
     last_login = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     date_joined = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    setting = UserSettingAllSerializer()
 class EmployeeDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = ('id', 'user', 'phone', 'portrait', 'position')
     user = UserDetailSerializer()
     position = PositionListSerializer()
+    portrait = serializers.SerializerMethodField()
 
+    # Make sure url is absolute
+    def get_portrait(self, instance):
+        if instance.portrait:
+            request = self.context.get('request', None)
+            return request.build_absolute_uri(instance.portrait.url)
+        else:
+            return None
 # Employee Create Serializer
 class UserCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -142,6 +166,7 @@ class EmployeeUpdateSerializer(serializers.ModelSerializer):
         model = Employee
         fields = ('id', 'user', 'phone', 'portrait', 'position')
     user = UserUpdateSerializer()
+    portrait = serializers.URLField(allow_blank=True)
     def update(self, instance, validated_data):
         user = validated_data.get('user', {})
         instance.user.first_name = user.get('first_name', None)
@@ -149,23 +174,42 @@ class EmployeeUpdateSerializer(serializers.ModelSerializer):
         instance.user.email = user.get('email', None)
         instance.user.save()
         instance.phone = validated_data.get('phone', None)
-        instance.portrait =validated_data.get('portrait', None)
+        portrait = validated_data.get('portrait', None)
+        if portrait:
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(urllib.request.urlopen(portrait).read())
+            img_temp.flush()
+            instance.portrait.save("%s.png" % instance.user.username, File(img_temp))
         instance.position = validated_data.get('position', None)
         instance.save()
         return instance
-
 
 # Record Field
 class RecordFieldAllSerializer(serializers.ModelSerializer):
     class Meta:
         model = RecordField
-        fields = ('id', 'position', 'name', 'unit')
+        fields = ('id', 'position', 'name', 'unit', 'order', 'disabled')
 
 # Record
 class RecordAllSerializer(serializers.ModelSerializer):
     class Meta:
         model = Record
         fields = ('id', 'employee', 'field', 'value', 'comment', 'date')
+
+# Pending Employee
+class PendingEmployeeUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', )
+class PendingEmployeeListAndDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PendingEmployee
+        fields = ('id', 'phone', 'first_name', 'last_name', 'position', 'user', 'password')
+    user = PendingEmployeeUserSerializer()
+class PendingEmployeeEditSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PendingEmployee
+        fields = ('id', 'phone', 'first_name', 'last_name', 'position')
 
 # Special Serializers
 class PositionPermissionListSerializer(serializers.ModelSerializer):
@@ -178,7 +222,6 @@ class PositionRecordFieldListandDetailSerializer(serializers.ModelSerializer):
         model = Position
         fields = ('id', 'name', 'department', 'record_fields')
     record_fields = RecordFieldAllSerializer(many=True)
-
 
 class EmployeeRecordDetailSerializer(serializers.ModelSerializer):
     class Meta:

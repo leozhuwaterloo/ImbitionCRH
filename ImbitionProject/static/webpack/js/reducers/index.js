@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
+import { reducer as notifications } from 'react-notification-system-redux';
 import myNavbar from './MyNavbar';
 import auth, * as fromAuth from './auth';
 import data from './Data';
@@ -7,6 +8,7 @@ import data from './Data';
 export default combineReducers({
   auth,
   rounter: routerReducer,
+  notifications,
   myNavbar,
   data,
 });

@@ -1,6 +1,24 @@
 from rest_framework import permissions
 from imbition.models import Permission
 from django.core.exceptions import PermissionDenied
+from rest_framework.exceptions import APIException
+
+class CustomResourceNotFound(APIException):
+    status_code = 404
+    default_code = 'not_found'
+
+class CustomPermissionDenied(APIException):
+    status_code = 403
+    default_code = 'permission_denied'
+
+class DateRangeException(APIException):
+    status_code = 400
+    default_detail = '错误的时间区域'
+    default_code = 'date_range_error'
+
+class CustomBadRequest(APIException):
+    status_code = 400
+    default_code = 'bad_request'
 
 def admin_only(func):
     def call_if_admin(self, request, *args, **kwargs):

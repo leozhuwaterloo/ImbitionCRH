@@ -4,13 +4,15 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import MainPage from './MainPage';
 import MyNavbar from './MyNavbar';
+import MyNotifications from './MyNotifications';
 import { RecordEdit, RecordSelfEdit, RecordView } from './Record';
 import EmployeeEdit from './Employee';
 import PermissionEdit from './Permission';
 import PositionTreeView from './Position';
 import DepartmentEdit from './Department';
 import EnsureLoggedInContainer from './EnsureLoggedInContainer';
-import { Login, Logout } from './Login';
+import Settings from './Settings';
+import { Login, Logout, LoginFirst } from './Login';
 import { URLS } from '../consts';
 import { setIsMobile } from '../actions';
 
@@ -25,10 +27,12 @@ class AppDumb extends React.Component {
         <div>
           <MyNavbar />
           <Switch>
-            <Route path={URLS.LOGIN} component={Login} />
+            <Route exact path={URLS.LOGIN} component={Login} />
+            <Route path={URLS.LOGIN_FIRST} component={LoginFirst} />
             <Route path={URLS.LOGOUT} component={Logout} />
             <EnsureLoggedInContainer>
               <Route exact path={URLS.ROOT} component={MainPage} />
+              <Route path={URLS.SETTINGS} component={Settings} />
               <Route path={URLS.RECORD_EDIT} component={RecordEdit} />
               <Route path={URLS.RECORD_SELF_EDIT} component={RecordSelfEdit} />
               <Route path={URLS.RECORD_VIEW} component={RecordView} />
@@ -40,6 +44,7 @@ class AppDumb extends React.Component {
               <Route path={URLS.ANALYSIS} component={MainPage} />
             </EnsureLoggedInContainer>
           </Switch>
+          <MyNotifications />
         </div>
       </BrowserRouter>
     );

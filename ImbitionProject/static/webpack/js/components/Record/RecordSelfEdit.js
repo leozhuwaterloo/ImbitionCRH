@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import moment from 'moment';
+import Notifications from 'react-notification-system-redux';
 import DistinctViewPage from '../DistinctViewPage';
 import { NAMES } from '../../consts';
 import { fetchData, createData, updateData } from '../../actions';
@@ -13,8 +14,9 @@ class RecordSelfEditDumb extends React.Component {
     props.fetchRecordFields();
 
     this.tryFetch = () => {
-      if (this.props.user && this.props.user.id) {
-        this.props.fetchEmployeeRecord(this.props.user, moment().format('YYYY-MM-DD'));
+      if (this.props.user && this.props.user.id
+        && this.props.recordfields && Object.keys(this.props.recordfields).length !== 0) {
+        this.props.fetchEmployeeRecord(this.props.user, this.props.recordfields, moment().format('YYYY-MM-DD'));
       } else {
         setTimeout(() => this.tryFetch(), 100);
       }
@@ -58,14 +60,16 @@ const mapStateToProps = (state) => {
   },
   mapDispatchToProps = dispatch => ({
     fetchRecordFields: () => dispatch(fetchData('recordfield', 'recordfields')),
-    fetchEmployeeRecord: (user, date) => dispatch(fetchData(`employeerecord/${
+    fetchEmployeeRecord: (user, recordfields, date) => dispatch(fetchData(`employeerecord/${
       user.id}`, 'employeerecord', (data) => {
       const dataRecords = {};
       let filtered = null;
       data.employeerecord.records.forEach((dataRecord) => {
         dataRecords[dataRecord.field] = dataRecord;
       });
-      filtered = user.position.record_fields.filter(recordFieldId => !dataRecords[recordFieldId]);
+      filtered = user.position.record_fields
+        .filter(recordFieldId => !dataRecords[recordFieldId])
+        .filter(recordFieldId => !recordfields[recordFieldId].disabled);
       filtered.forEach((recordFieldId, index) => {
         let callback = null;
         if (index === filtered.length - 1) {

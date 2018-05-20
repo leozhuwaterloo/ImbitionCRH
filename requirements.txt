@@ -5,3 +5,4 @@ psycopg2-binary==2.7.4
 django-webpack-loader==0.6.0
 djangorestframework_simplejwt=3.2.3
 coreapi-cli==1.0.9
+django-cleanup=2.1.0

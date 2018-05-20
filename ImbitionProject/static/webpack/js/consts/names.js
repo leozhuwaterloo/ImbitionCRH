@@ -1,3 +1,5 @@
+import { FETCH_REQUEST, UPDATE_REQUEST, CREATE_REQUEST, DELETE_REQUEST } from '../actions';
+
 const NAMES = {};
 NAMES.LOGIN = '登录';
 NAMES.LOGIN_FIELD_1 = '账号/手机';
@@ -7,6 +9,10 @@ NAMES.LOGOUT_SUBMIT = '登出';
 NAMES.LOGIN_FIRST = '初次登录?';
 NAMES.LOGIN_WECHAT = '微信登录';
 NAMES.LOGIN_OTHER = '第三方账号登录';
+NAMES.LOGIN_FIRST_FIELD_1 = '手机';
+NAMES.LOGIN_FIRST_FIELD_2 = '姓';
+NAMES.LOGIN_FIRST_FIELD_3 = '名';
+NAMES.LOGIN_FIRST_SUBMIT = '激活';
 
 NAMES.NAVBAR_BACK = '返回';
 NAMES.FOOTER_TEXT = '@2018车融汇版权所有';
@@ -35,11 +41,15 @@ NAMES.RECORD_FIELD_ADD = '添加记录';
 NAMES.RECORD_FIELD_UPDATE = '更新记录';
 NAMES.RECORD_FIELD_DELETE = '删除记录';
 NAMES.RECORD_FIELD_DELETE_CONFIRM = recordFieldName => `你确定要删除(${recordFieldName})这个记录么? (注意数据也会被删除)`;
+NAMES.RECORD_FIELD_DISABLED = '停用';
 NAMES.RECORD_SELF_EDIT = '我的日志';
 NAMES.RECORD_SELF_SAVE = '保存';
 NAMES.RECORD_SELF_COMMENT = '备注';
 NAMES.RECORD_SELF_VALUE = '数值';
 NAMES.RECORD_VIEW = '日志查看';
+NAMES.RECORD_VIEW_EMPLOYEE_FULL_NAME = '姓名'; // Note that this has dependency based on REST Api
+NAMES.RECORE_VIEW_DATE_RESET = '重置';
+NAMES.RECORD_VIEW_NO_DATA = '对不起, 没有找到匹配的数据';
 
 NAMES.DEPARTMENT_EDIT = '部门分配';
 NAMES.DEPARTMENT = '部门';
@@ -58,6 +68,25 @@ NAMES.EDIT = '修改';
 NAMES.VIEW = '查看';
 NAMES.NAVIGATION_PANEL = '导航栏';
 
+NAMES.SUCCESS = '成功';
+NAMES.PROCESSING = '进行中';
+NAMES.FETCH_SUCCESS_MESSAGE = dataName => `成功获取${dataName}数据`;
+NAMES.UPDATE_SUCCESS_MESSAGE = '成功更新数据';
+NAMES.CREATE_SUCCESS_MESSAGE = '成功创建数据';
+NAMES.DELETE_SUCCESS_MESSAGE = '成功删除数据';
+
+NAMES.REQUEST_MESSAGE = (type) => {
+  switch (type) {
+    case FETCH_REQUEST: return '正在尝试获取数据';
+    case UPDATE_REQUEST: return '正在尝试更新数据';
+    case CREATE_REQUEST: return '正在尝试创建数据';
+    case DELETE_REQUEST: return '正在尝试删除数据';
+    default: return '';
+  }
+};
+
+NAMES.PORTRAIT_EDIT = '头像编辑';
+NAMES.ERROR = '错误';
 NAMES.FILTER = '筛选';
 NAMES.COMMENT = '备注';
 NAMES.CSV_EXPORT = '导出CSV';

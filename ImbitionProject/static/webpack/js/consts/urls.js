@@ -12,6 +12,7 @@ URLS.PERMISSION_EDIT = `${URLS.ROOT}permission/edit/`;
 URLS.POSITION_TREE_VIEW = `${URLS.ROOT}position/tree/`;
 URLS.DEPARTMENT_EDIT = `${URLS.ROOT}department/edit/`;
 URLS.SUMMARY = `${URLS.ROOT}summary/`;
+URLS.SETTINGS = `${URLS.ROOT}settings/`;
 URLS.ANALYSIS = `${URLS.ROOT}analysis/`;
 URLS.IMAGE = '/static/imbition/img/';
 

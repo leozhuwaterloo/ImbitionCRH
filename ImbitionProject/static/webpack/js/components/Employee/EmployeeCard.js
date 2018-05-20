@@ -46,7 +46,7 @@ class EmployeeCard extends React.Component {
                   <div key={key}>
                     {
                       Object.keys(employee[key]).map((userKey) => {
-                        if (userKey === 'id' || userKey === 'username') return null;
+                        if (userKey === 'id' || userKey === 'username' || userKey === 'setting') return null;
                         return (
                           <TextInput
                             disabled={userKey === 'last_login' || userKey === 'date_joined'}
@@ -121,7 +121,7 @@ class EmployeeCard extends React.Component {
             onClick={() => {
               this.props.updateEmployee(employee.id, Object.assign({}, employee, {
                 position: (employee.position && employee.position.id) || null,
-                portrait: null,
+                portrait: '',
               }));
             }}
           >

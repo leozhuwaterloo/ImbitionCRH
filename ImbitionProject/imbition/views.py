@@ -1,15 +1,40 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, routers
 from imbition import serializers
-from imbition.models import Permission, Department, Position, Employee, RecordField, Record
+from imbition.models import Permission, Department, Position, Employee, RecordField, Record, PendingEmployee, UserSetting
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from imbition.permissions import admin_only, get_children, get_readable, get_changable
+from imbition.permissions import DateRangeException, CustomBadRequest, CustomResourceNotFound
+from datetime import timedelta, date, datetime
+
+def daterange(start_date, end_date):
+    for n in range(int((end_date - start_date).days) + 1):
+        yield start_date + timedelta(n)
 
 def index(request):
     return render(request, 'imbition/index.html')
+
+class PendingEmployeeCheckView(APIView):
+
+    permission_classes = []
+    authentication_classes = []
+
+    def post(self, request, format=None):
+        phone = self.request.query_params.get('phone', None)
+        first_name = self.request.query_params.get('first_name', None)
+        last_name = self.request.query_params.get('last_name', None)
+        if phone is None or first_name is None or last_name is None:
+            raise CustomBadRequest("Must specify phone, first_name, and last_name")
+        pending_employee = PendingEmployee.objects.filter(phone=phone, first_name=first_name, last_name=last_name).first()
+        if pending_employee is not None:
+            serializer = serializers.PendingEmployeeListAndDetailSerializer(pending_employee)
+        else:
+            raise CustomResourceNotFound("对不起，您提供的信息有误")
+        return Response(serializer.data)
 
 class FourSerializerViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, )
@@ -150,7 +175,7 @@ class EmployeeViewSet(FourSerializerViewSet):
                     continue
             if not have_access:
                 raise PermissionDenied()
-            serializer = self.detail_serializer(employee)
+            serializer = self.detail_serializer(employee, context={"request": request})
             return Response(serializer.data)
         raise PermissionDenied()
     def update(self, request, *args, **kwargs):
@@ -252,6 +277,27 @@ class RecordViewSet(FourSerializerViewSet):
             if request.data and request.data['employee'] and request.data['employee'] == request.user.employee.id:
                 return super(FourSerializerViewSet, self).update(request, *args, **kwargs)
         raise PermissionDenied()
+
+class UserSettingViewSet(FourSerializerViewSet):
+    list_serializer = serializers.UserSettingAllSerializer
+    detail_serializer = serializers.UserSettingAllSerializer
+    create_serializer = serializers.UserSettingAllSerializer
+    update_serializer = serializers.UserSettingAllSerializer
+    queryset = UserSetting.objects.all()
+    @admin_only
+    def list(self, request, *args, **kwargs):
+        return super(FourSerializerViewSet, self).list(request, *args, **kwargs)
+
+class PendingEmployeeViewSet(FourSerializerViewSet):
+    list_serializer = serializers.PendingEmployeeListAndDetailSerializer
+    detail_serializer = serializers.PendingEmployeeListAndDetailSerializer
+    create_serializer = serializers.PendingEmployeeEditSerializer
+    update_serializer = serializers.PendingEmployeeEditSerializer
+    queryset = PendingEmployee.objects.all()
+    @admin_only
+    def list(self, request, *args, **kwargs):
+        return super(FourSerializerViewSet, self).list(request, *args, **kwargs)
+
 # Speical Viewsets
 class PositionPermissionViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated, )
@@ -311,7 +357,7 @@ class UserDetailViewSet(viewsets.ViewSet):
         if (not request.user or user.id != request.user.id) and not request.user.is_staff:
             raise PermissionDenied()
         employee = get_object_or_404(Employee.objects.all(), user=user)
-        serializer = serializers.EmployeeDetailSerializer(employee)
+        serializer = serializers.EmployeeDetailSerializer(employee, context={"request": request})
         return Response(serializer.data)
 
 class PositionTreeViewSet(viewsets.ViewSet):
@@ -327,3 +373,68 @@ class PositionTreeViewSet(viewsets.ViewSet):
             raise PermissionDenied()
         serializer = serializers.PositionTreeSerializer(position)
         return Response(serializer.data)
+
+
+class RecordSummaryViewSet(viewsets.ViewSet):
+    permission_classes = (IsAuthenticated, )
+    queryset = Record.objects.all()
+    def list(self, request):
+        startDate = self.request.query_params.get('startDate', None)
+        endDate = self.request.query_params.get('endDate', None)
+        if startDate is None or endDate is None:
+            raise PermissionDenied()
+        startDate = datetime.strptime(startDate, '%Y-%m-%d').date()
+        endDate = datetime.strptime(endDate, '%Y-%m-%d').date()
+        if startDate > endDate: raise DateRangeException()
+        records = Record.objects.filter(date__range=[startDate, endDate])
+        fieldNames = set()
+        data = list()
+        recordmaps = dict()
+        ordermap = dict()
+        if request.user and request.user.is_staff:
+            employees = Employee.objects.all()
+        else:
+            employees = set()
+            for position in get_readable(request.user.employee.position):
+                for employee in position.employees.all():
+                    employees.add(employee)
+        for record in records:
+            if record.field.disabled:
+                continue
+            fieldName = record.field.name + ((" (%s)" % record.field.unit) if record.field.unit else "")
+            if fieldName not in ordermap or ordermap[fieldName] < record.field.order:
+                ordermap[fieldName] = record.field.order
+            fieldNames.add(fieldName)
+            if record.employee.id not in recordmaps:
+                recordmaps[record.employee.id] = dict();
+            if record.date not in recordmaps[record.employee.id]:
+                recordmaps[record.employee.id][record.date] = dict();
+
+            recordmaps[record.employee.id][record.date][fieldName] = record;
+
+        for date in daterange(startDate, endDate):
+            for employee in employees:
+                employeeData = dict()
+                employeeData["姓名"] = employee.get_full_name()
+                employeeData["日期"] = date
+                for fieldName in fieldNames:
+                    if employee.id in recordmaps and date in recordmaps[employee.id] and fieldName in recordmaps[employee.id][date]:
+                        employeeData[fieldName] = recordmaps[employee.id][date][fieldName].value
+                        employeeData["%s 备注" % fieldName] = recordmaps[employee.id][date][fieldName].comment
+                    else:
+                        employeeData[fieldName] = None
+                        employeeData["%s 备注" % fieldName] = None
+                data.append(employeeData)
+
+        order = []
+        order.append("姓名")
+        order.append("日期")
+        for fieldName in sorted(fieldNames, key=lambda name: ordermap[name]):
+            order.append(fieldName)
+            order.append("%s 备注" % fieldName)
+
+
+        return Response(dict(
+            data=data,
+            order=order,
+        ))

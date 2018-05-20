@@ -18,6 +18,10 @@
 }
 
 #tree {
+  width: 100%;
   height: calc(100vh - 200px);
   overflow-y: scroll;
+  overflow-x: hidden;
+  box-sizing: content-box;
+  padding-right: 17px;
 }

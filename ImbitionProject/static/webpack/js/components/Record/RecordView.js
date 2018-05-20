@@ -10,9 +10,8 @@ import RecordViewMobile from './RecordViewMobile';
 class RecordViewDumb extends React.Component {
   constructor(props) {
     super(props);
-    props.fetchEmployees();
-    props.fetchRecords(moment().format('YYYY-MM-DD'));
-    props.fetchRecordFields();
+    const dateNow = moment().format('YYYY-MM-DD');
+    props.fetchRecordSummary(dateNow, dateNow);
   }
 
   render() {
@@ -26,35 +25,17 @@ class RecordViewDumb extends React.Component {
 }
 
 RecordViewDumb.propTypes = {
-  employees: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
-  record: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  recordfields: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
-  fetchEmployees: PropTypes.func.isRequired,
-  fetchRecords: PropTypes.func.isRequired,
-  fetchRecordFields: PropTypes.func.isRequired,
+  recordsummary: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  fetchRecordSummary: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => {
-    const recordfields = {};
-
-    state.data.recordfields.forEach((recordfield) => {
-      recordfields[recordfield.id] = recordfield;
-    });
-
-    return {
-      recordfields,
-      employees: state.data.employees,
-      record: state.data.record,
-    };
-  },
+const mapStateToProps = state => ({
+    recordsummary: state.data.recordsummary,
+  }),
   mapDispatchToProps = dispatch => ({
-    fetchEmployees: () => dispatch(fetchData('employee', 'employees')),
-    fetchRecordFields: () => dispatch(fetchData('recordfield', 'recordfields')),
-    fetchRecords: date => dispatch(fetchData('record', 'record', (data) => {
-      const tmpRecord = data.record;
-      data.record = {};
-      data.record[date] = tmpRecord;
-    }, `date=${date}`)),
+    fetchRecordSummary: (startDate, endDate) => {
+      dispatch(fetchData('recordsummary', 'recordsummary', null, `startDate=${startDate}&endDate=${endDate}`));
+    },
   }),
   RecordView = connect(mapStateToProps, mapDispatchToProps)(RecordViewDumb);
 

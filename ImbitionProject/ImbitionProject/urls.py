@@ -33,13 +33,15 @@ router.register(r'api/imbition/position', imbition_views.PositionViewSet)
 router.register(r'api/imbition/department', imbition_views.DepartmentViewSet)
 router.register(r'api/imbition/recordfield', imbition_views.RecordFieldViewSet)
 router.register(r'api/imbition/record', imbition_views.RecordViewSet)
-
+router.register(r'api/imbition/pendingemployee', imbition_views.PendingEmployeeViewSet)
+router.register(r'api/imbition/usersetting', imbition_views.UserSettingViewSet)
 
 router.register(r'api/imbition/positionpermission', imbition_views.PositionPermissionViewSet)
 router.register(r'api/imbition/positionrecord', imbition_views.PositionRecordFieldViewSet)
 router.register(r'api/imbition/employeerecord', imbition_views.EmployeeRecordViewSet)
 router.register(r'api/imbition/user', imbition_views.UserDetailViewSet)
 router.register(r'api/imbition/positiontree', imbition_views.PositionTreeViewSet)
+router.register(r'api/imbition/recordsummary', imbition_views.RecordSummaryViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -48,6 +50,7 @@ urlpatterns = [
     path('api/', get_schema_view()),
     path('api/auth/', include(
         'rest_framework.urls', namespace='rest_framework')),
+    path('api/auth/pendingemployee/check/', imbition_views.PendingEmployeeCheckView.as_view()),
     path('api/auth/token/obtain/', TokenObtainPairView.as_view()),
     path('api/auth/token/refresh/', TokenRefreshView.as_view()),
 ] + router.urls + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

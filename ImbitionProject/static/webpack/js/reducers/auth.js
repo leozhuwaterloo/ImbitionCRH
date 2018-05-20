@@ -1,6 +1,6 @@
 import jwtDecode from 'jwt-decode';
 import {
-  LOGIN_SUCCESS, LOGIN_FAILURE,
+  LOGIN_SUCCESS, LOGIN_FAILURE, LOGIN_FIRST_FAILURE,
   TOKEN_RECEIVED, TOKEN_FAILURE,
   LOGOUT,
 } from '../actions';
@@ -30,6 +30,7 @@ export default (state = initialState, action) => {
         }),
       });
     case LOGIN_FAILURE:
+    case LOGIN_FIRST_FAILURE:
     case TOKEN_FAILURE:
       return {
         access: null,

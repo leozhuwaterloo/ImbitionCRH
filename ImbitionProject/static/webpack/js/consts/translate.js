@@ -13,7 +13,19 @@ TRANSLATE.date_joined = '注册时间';
 TRANSLATE.phone = '手机';
 TRANSLATE.position = NAMES.POSITION;
 TRANSLATE.department = NAMES.DEPARTMENT;
-
+TRANSLATE.user = '用户';
+TRANSLATE.recordsummary = '日志';
+TRANSLATE.employeerecord = '员工记录';
+TRANSLATE.recordfields = '日志记录';
+TRANSLATE.positiontree = '岗位树图';
+TRANSLATE.departments = '部门';
+TRANSLATE.positionrecords = '岗位所需';
+TRANSLATE.employees = '员工';
+TRANSLATE.positions = '岗位';
+TRANSLATE.permissions = '权限';
+TRANSLATE.positionpermissions = '职位权限';
+TRANSLATE.employee = '员工';
+TRANSLATE.username = '账号';
 
 export default function translate(str) {
   return TRANSLATE[str] || str;

@@ -121,7 +121,7 @@ class EmployeeCard extends React.Component {
             onClick={() => {
               this.props.updateEmployee(employee.id, Object.assign({}, employee, {
                 position: (employee.position && employee.position.id) || null,
-                portrait: '',
+                portrait: null,
               }));
             }}
           >

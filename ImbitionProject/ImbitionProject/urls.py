@@ -25,6 +25,7 @@ from rest_framework_simplejwt.views import (
 from imbition import views as imbition_views
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views
 
 router = routers.DefaultRouter()
 router.register(r'api/imbition/employee', imbition_views.EmployeeViewSet)
@@ -53,4 +54,5 @@ urlpatterns = [
     path('api/auth/pendingemployee/check/', imbition_views.PendingEmployeeCheckView.as_view()),
     path('api/auth/token/obtain/', TokenObtainPairView.as_view()),
     path('api/auth/token/refresh/', TokenRefreshView.as_view()),
+    path('api/auth/password/reset/', imbition_views.PasswordResetView.as_view()),
 ] + router.urls + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

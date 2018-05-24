@@ -11,6 +11,7 @@ const initialState = {
   departments: [],
   permissions: [],
   recordfields: [],
+  pendingemployees: [],
 
   fetcherrors: {},
   updateerrors: {},

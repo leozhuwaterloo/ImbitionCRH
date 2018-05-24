@@ -109,7 +109,7 @@ class SideNavWrapperDumb extends React.Component {
                 </li>
                 <li className="nav-item ml-3 mr-3">
                   <Link className="nav-link text-secondary" to={URLS.EMPLOYEE_EDIT}>
-                    <FontAwesome.FaUserPlus className="mb-1 mr-1" />{NAMES.EMPLOYEE_EDIT}
+                    <FontAwesome.FaGroup className="mb-1 mr-1" />{NAMES.EMPLOYEE_EDIT}
                   </Link>
                 </li>
                 <li className="nav-item ml-3 mr-3">
@@ -120,6 +120,11 @@ class SideNavWrapperDumb extends React.Component {
                 <li className="nav-item ml-3 mr-3">
                   <Link className="nav-link text-secondary" to={URLS.DEPARTMENT_EDIT}>
                     <FontAwesome.FaFlag className="mb-1 mr-1" />{NAMES.DEPARTMENT_EDIT}
+                  </Link>
+                </li>
+                <li className="nav-item ml-3 mr-3">
+                  <Link className="nav-link text-secondary" to={URLS.PENDING_EMPLOYEE_EDIT}>
+                    <FontAwesome.FaUserPlus className="mb-1 mr-1" />{NAMES.PENDING_EMPLOYEE_EDIT}
                   </Link>
                 </li>
               </div>

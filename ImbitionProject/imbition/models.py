@@ -3,9 +3,6 @@ from django.contrib.auth.models import User
 import uuid
 from datetime import date
 from rest_framework.exceptions import APIException
-import string
-import random
-
 
 class UserSetting(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='setting')
@@ -108,32 +105,19 @@ class Record(models.Model):
     def __str__(self):
         return self.employee.user.last_name + self.employee.user.first_name + ' - ' + str(self.field)
 
-
-def random_string(length):
-    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(length))
-
 class PendingEmployee(models.Model):
-    phone = models.CharField(max_length=30, null=False, unique=True)
-    first_name = models.CharField(max_length=75, null=False)
-    last_name = models.CharField(max_length=75, null=False)
+    phone = models.CharField(max_length=30, null=False, unique=True, blank=False)
+    first_name = models.CharField(max_length=75, null=False, blank=False)
+    last_name = models.CharField(max_length=75, null=False, blank=False)
     position = models.ForeignKey(Position, on_delete=models.CASCADE, null=False, blank=True, related_name="pending_employees")
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="pending_employee")
-    password = models.CharField(max_length = 10, null=False)
+    username = models.CharField(max_length=25, null=True)
+    password = models.CharField(max_length=25, null=True)
+    created_at = models.DateField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="pending_employees")
+
     def save(self, *args, **kwargs):
         if not Employee.objects.filter(phone = self.phone).exists():
-            try:
-                username = random_string(10)
-                self.password = random_string(10)
-                while User.objects.filter(username=username).exists():
-                    username = random_string(10)
-                self.user = User.objects.create_user(username, None, self.password)
-                self.user.last_name = self.last_name
-                self.user.first_name = self.first_name
-                self.user.save()
-                Employee(user=self.user, position=self.position, phone=self.phone).save()
-                super(PendingEmployee, self).save(*args, **kwargs)
-            except Exception as e:
-                raise e
+            super(PendingEmployee, self).save(*args, **kwargs)
         else:
             raise APIException("已经有员工使用此手机号了")
 

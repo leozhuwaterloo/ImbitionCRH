@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import Notifications from 'react-notification-system-redux';
 import DistinctViewPage from '../DistinctViewPage';
 import { NAMES } from '../../consts';
 import { fetchData, createData, updateData } from '../../actions';

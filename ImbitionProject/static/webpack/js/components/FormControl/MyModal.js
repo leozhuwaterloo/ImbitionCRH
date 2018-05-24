@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import 'bootstrap/js/dist/modal';
 
 const MyModal = ({
-  id, title, body, btn1, btn2, onSubmit,
+  id, title, body, btn1, btn2, onSubmit, className,
 }) => (
-  <div className="modal fade" id={id}>
+  <div className={`modal fade ${className}`} id={id}>
     <div className="modal-dialog" role="document">
       <div className="modal-content">
         <div className="modal-header">
@@ -34,12 +34,14 @@ MyModal.propTypes = {
   btn1: PropTypes.string,
   btn2: PropTypes.string,
   onSubmit: PropTypes.func,
+  className: PropTypes.string,
 };
 
 MyModal.defaultProps = {
   btn1: '确认',
   btn2: '取消',
   onSubmit: () => {},
+  className: '',
 };
 
 export default MyModal;

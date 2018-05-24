@@ -21,6 +21,10 @@ body {
   height: 100%;
 }
 
+.overflow-hidden {
+  overflow: hidden;
+}
+
 .bold {
   font-weight: bold;
 }
@@ -78,6 +82,36 @@ a {
   .float-right {
     transform: rotate(90deg);
   }
+}
+
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: theme-color('dark');
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: theme-color('dark');
+    cursor: pointer;
 }
 
 @import './tree.scss';

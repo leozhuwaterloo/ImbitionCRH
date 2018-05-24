@@ -7,6 +7,8 @@ from django.core.exceptions import PermissionDenied
 import urllib.request
 from django.core.files.temp import NamedTemporaryFile
 from django.core.files import File
+import base64
+from django.core.files.base import ContentFile
 # Edit Serializer are for both create and update
 
 # UserSetting
@@ -149,7 +151,7 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = ('id', 'user', 'phone', 'portrait', 'position')
-    user =  UserCreateSerializer()
+    user = UserCreateSerializer()
     def create(self, validated_data):
         validated_data["user"] = User.objects.create_user(**validated_data.get("user", {}))
         new_employee = Employee(**validated_data)
@@ -166,7 +168,7 @@ class EmployeeUpdateSerializer(serializers.ModelSerializer):
         model = Employee
         fields = ('id', 'user', 'phone', 'portrait', 'position')
     user = UserUpdateSerializer()
-    portrait = serializers.URLField(allow_blank=True)
+    portrait = serializers.CharField(allow_blank=False, allow_null=True)
     def update(self, instance, validated_data):
         user = validated_data.get('user', {})
         instance.user.first_name = user.get('first_name', None)
@@ -176,10 +178,16 @@ class EmployeeUpdateSerializer(serializers.ModelSerializer):
         instance.phone = validated_data.get('phone', None)
         portrait = validated_data.get('portrait', None)
         if portrait:
-            img_temp = NamedTemporaryFile(delete=True)
-            img_temp.write(urllib.request.urlopen(portrait).read())
-            img_temp.flush()
-            instance.portrait.save("%s.png" % instance.user.username, File(img_temp))
+            splitted = portrait.split(';base64,')
+            if len(splitted) == 2: # if it is base64 file
+                format, imgstr = splitted
+                ext = format.split('/')[-1]
+                instance.portrait.save("%s.png" % instance.user.username, ContentFile(base64.b64decode(imgstr)))
+            else: # normal image url
+                img_temp = NamedTemporaryFile(delete=True)
+                img_temp.write(urllib.request.urlopen(portrait).read())
+                img_temp.flush()
+                instance.portrait.save("%s.png" % instance.user.username, File(img_temp))
         instance.position = validated_data.get('position', None)
         instance.save()
         return instance
@@ -196,20 +204,38 @@ class RecordAllSerializer(serializers.ModelSerializer):
         model = Record
         fields = ('id', 'employee', 'field', 'value', 'comment', 'date')
 
-# Pending Employee
-class PendingEmployeeUserSerializer(serializers.ModelSerializer):
+# Pending
+class PendingEmployeeListAndDetailUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', )
+        fields = ('first_name', 'last_name', 'position')
+    position = serializers.SerializerMethodField()
+    def get_position(self, obj):
+        if obj.employee and obj.employee.position:
+            return obj.employee.position.name
+        return None
 class PendingEmployeeListAndDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = PendingEmployee
-        fields = ('id', 'phone', 'first_name', 'last_name', 'position', 'user', 'password')
-    user = PendingEmployeeUserSerializer()
+        fields = ('id', 'phone', 'first_name', 'last_name', 'position', 'username', 'password', 'created_at', 'created_by')
+    created_by = PendingEmployeeListAndDetailUserSerializer()
 class PendingEmployeeEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = PendingEmployee
         fields = ('id', 'phone', 'first_name', 'last_name', 'position')
+    def create(self, validated_data):
+        new_pending_employee = PendingEmployee(**validated_data)
+        request = self.context.get("request", None)
+        if request is None or not request.user:
+            raise PermissionDenied()
+        new_pending_employee.created_by = request.user
+        new_pending_employee.save()
+        return new_pending_employee
+
+class PendingEmployeeCheckSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PendingEmployee
+        fields = ('id', 'phone', 'first_name', 'last_name')
 
 # Special Serializers
 class PositionPermissionListSerializer(serializers.ModelSerializer):
@@ -247,3 +273,15 @@ class PositionTreeSerializer(serializers.ModelSerializer):
             return PositionTreeSerializer(obj.children, many=True).data
         else:
             return None
+
+class PasswordResetSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField()
+    old_password = serializers.CharField(
+        style={'input_type': 'password'}
+    )
+    new_password = serializers.CharField(
+        style={'input_type': 'password'}
+    )
+    new_password_confirm = serializers.CharField(
+        style={'input_type': 'password'}
+    )

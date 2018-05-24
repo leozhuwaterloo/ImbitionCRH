@@ -13,7 +13,8 @@ export default combineReducers({
   data,
 });
 
-export const getUserId = state => fromAuth.getUserId(state.auth),
+export const getTempPassword = state => fromAuth.getTempPassword(state.auth),
+  getUserId = state => fromAuth.getUserId(state.auth),
   accessToken = state => fromAuth.accessToken(state.auth),
   refreshToken = state => fromAuth.refreshToken(state.auth),
   isAuthenticated = state => fromAuth.isAuthenticated(state.auth),

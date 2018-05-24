@@ -7,6 +7,7 @@ import { URLS } from '../../consts';
 
 const LogoutDumb = (props) => {
     props.logout();
+    window.location.reload();
     return <Redirect to={{ pathname: URLS.LOGIN }} />;
   },
   mapDispatchToProps = dispatch => ({

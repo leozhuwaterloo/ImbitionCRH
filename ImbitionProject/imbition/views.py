@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from rest_framework import viewsets, routers
+from rest_framework import viewsets, routers, mixins
 from imbition import serializers
 from imbition.models import Permission, Department, Position, Employee, RecordField, Record, PendingEmployee, UserSetting
 from rest_framework.response import Response
@@ -10,6 +10,8 @@ from django.core.exceptions import PermissionDenied
 from imbition.permissions import admin_only, get_children, get_readable, get_changable
 from imbition.permissions import DateRangeException, CustomBadRequest, CustomResourceNotFound
 from datetime import timedelta, date, datetime
+import string
+import random
 
 def daterange(start_date, end_date):
     for n in range(int((end_date - start_date).days) + 1):
@@ -18,24 +20,72 @@ def daterange(start_date, end_date):
 def index(request):
     return render(request, 'imbition/index.html')
 
-class PendingEmployeeCheckView(APIView):
 
+def random_string(length):
+    return ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(length))
+
+
+class PendingEmployeeCheckView(APIView):
     permission_classes = []
     authentication_classes = []
+    serializer_class = serializers.PendingEmployeeCheckSerializer
 
     def post(self, request, format=None):
-        phone = self.request.query_params.get('phone', None)
-        first_name = self.request.query_params.get('first_name', None)
-        last_name = self.request.query_params.get('last_name', None)
-        if phone is None or first_name is None or last_name is None:
-            raise CustomBadRequest("Must specify phone, first_name, and last_name")
+        phone = request.data.get('phone', None)
+        first_name = request.data.get('first_name', None)
+        last_name = request.data.get('last_name', None)
+        username = request.data.get('username', None)
+        if phone is None or first_name is None or last_name is None or username is None:
+            raise CustomBadRequest("Must specify phone, first_name, last_name and username")
         pending_employee = PendingEmployee.objects.filter(phone=phone, first_name=first_name, last_name=last_name).first()
         if pending_employee is not None:
+            if User.objects.filter(username=username).exists():
+                raise CustomBadRequest("用户名已存在")
+
+            password = random_string(25)
+            try:
+                user = User(username=username)
+                user.set_password(password)
+                user.first_name = first_name
+                user.last_name = last_name
+                user.save()
+                Employee(user=user, position=pending_employee.position, phone=phone).save()
+            except Exception as e:
+                raise e
+
+            pending_employee.username = username
+            pending_employee.password = password
             serializer = serializers.PendingEmployeeListAndDetailSerializer(pending_employee)
+            pending_employee.delete()
         else:
             raise CustomResourceNotFound("对不起，您提供的信息有误")
         return Response(serializer.data)
 
+
+class PasswordResetView(APIView):
+    permission_classes = []
+    authentication_classes = []
+    serializer_class = serializers.PasswordResetSerializer
+
+    def post(self, request, format=None):
+        user_id = request.data.get('user_id', None)
+        user = get_object_or_404(User.objects.all(), pk=user_id)
+        old_password = request.data.get('old_password', None)
+        if not user.check_password(old_password):
+            raise CustomResourceNotFound("对不起，您提供的信息有误")
+
+        new_password = request.data.get('new_password', None)
+        new_password_confirm = request.data.get('new_password_confirm', None)
+        if new_password != new_password_confirm:
+            raise CustomResourceNotFound("两次输出密码不一致")
+        if not new_password:
+            raise CustomResourceNotFound("密码不可为空")
+
+        user.set_password(new_password)
+        user.save()
+        return Response({ 'detail': '密码修改成功' })
+
+# View Set
 class FourSerializerViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, )
     def get_serializer_class(self):
@@ -168,13 +218,14 @@ class EmployeeViewSet(FourSerializerViewSet):
             return super(FourSerializerViewSet, self).retrieve(request, *args, **kwargs)
         elif request.user and request.user.employee and request.user.employee.position:
             employee = get_object_or_404(Employee.objects.all(), pk=kwargs.get('pk', None))
-            have_access = False
-            for position in get_readable(request.user.employee.position):
-                if employee in position.employees.all():
-                    have_access = True
-                    continue
-            if not have_access:
-                raise PermissionDenied()
+            if not request.user.employee.id == employee.id:
+                have_access = False
+                for position in get_readable(request.user.employee.position):
+                    if employee in position.employees.all():
+                        have_access = True
+                        continue
+                if not have_access:
+                    raise PermissionDenied()
             serializer = self.detail_serializer(employee, context={"request": request})
             return Response(serializer.data)
         raise PermissionDenied()
@@ -182,19 +233,24 @@ class EmployeeViewSet(FourSerializerViewSet):
         if request.user and request.user.is_staff:
             return super(FourSerializerViewSet, self).update(request, *args, **kwargs)
         elif request.user and request.user.employee and request.user.employee.position:
-            employee = get_object_or_404(Employee.objects.all(), pk=kwargs.get('pk', None))
             changable = get_changable(request.user.employee.position)
-            # Check if have_access to the employee
-            have_access = False
-            for position in changable:
-                if employee in position.employees.all():
-                    have_access = True
-                    continue
-            if not have_access:
-                raise PermissionDenied()
+            employee = get_object_or_404(Employee.objects.all(), pk=kwargs.get('pk', None))
+            request_isself = request.user.employee.id == employee.id
+            if not request_isself:
+                # Check if have_access to the employee
+                have_access = False
+                for position in changable:
+                    if employee in position.employees.all():
+                        have_access = True
+                        continue
+                if not have_access:
+                    raise PermissionDenied()
+            else:
+                if request.data and request.data['position'] and not request.data['position'] == request.user.employee.position.id:
+                    raise CustomBadRequest("你不可以修改自己的职位")
 
             # Check if have access to position;
-            if request.data and request.data['position']:
+            if request.data and request.data['position'] and not request_isself:
                 position = get_object_or_404(Position.objects.all(), pk=request.data['position'])
                 if position not in changable:
                     raise PermissionDenied()
@@ -416,6 +472,9 @@ class RecordSummaryViewSet(viewsets.ViewSet):
             for employee in employees:
                 employeeData = dict()
                 employeeData["姓名"] = employee.get_full_name()
+                employeeData["手机"] = employee.phone
+                employeeData["岗位"] = employee.position.name if employee.position else None
+                employeeData["部门"] = employee.position.department.name if employee.position and employee.position.department else None
                 employeeData["日期"] = date
                 for fieldName in fieldNames:
                     if employee.id in recordmaps and date in recordmaps[employee.id] and fieldName in recordmaps[employee.id][date]:
@@ -428,6 +487,9 @@ class RecordSummaryViewSet(viewsets.ViewSet):
 
         order = []
         order.append("姓名")
+        order.append("手机")
+        order.append("岗位")
+        order.append("部门")
         order.append("日期")
         for fieldName in sorted(fieldNames, key=lambda name: ordermap[name]):
             order.append(fieldName)

@@ -6,7 +6,7 @@ import MainPage from './MainPage';
 import MyNavbar from './MyNavbar';
 import MyNotifications from './MyNotifications';
 import { RecordEdit, RecordSelfEdit, RecordView } from './Record';
-import EmployeeEdit from './Employee';
+import { EmployeeEdit, PendingEmployeeEdit } from './Employee';
 import PermissionEdit from './Permission';
 import PositionTreeView from './Position';
 import DepartmentEdit from './Department';
@@ -37,6 +37,7 @@ class AppDumb extends React.Component {
               <Route path={URLS.RECORD_SELF_EDIT} component={RecordSelfEdit} />
               <Route path={URLS.RECORD_VIEW} component={RecordView} />
               <Route path={URLS.EMPLOYEE_EDIT} component={EmployeeEdit} />
+              <Route path={URLS.PENDING_EMPLOYEE_EDIT} component={PendingEmployeeEdit} />
               <Route path={URLS.POSITION_TREE_VIEW} component={PositionTreeView} />
               <Route path={URLS.PERMISSION_EDIT} component={PermissionEdit} />
               <Route path={URLS.DEPARTMENT_EDIT} component={DepartmentEdit} />

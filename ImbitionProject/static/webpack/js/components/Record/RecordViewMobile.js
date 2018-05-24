@@ -83,9 +83,12 @@ class RecordViewMobile extends React.Component {
     if (this.props.recordsummary.data && this.props.recordsummary.data[0]) {
       let counter = 0;
       this.props.recordsummary.order.forEach((key) => {
-        const isNotField = (key === NAMES.RECORD_VIEW_EMPLOYEE_FULL_NAME || key === NAMES.DATE);
+        const isNotField = (key === NAMES.RECORD_VIEW_EMPLOYEE_FULL_NAME
+          || key === NAMES.DATE || key === NAMES.POSITION || key === NAMES.DEPARTMENT
+          || key === NAMES.PHONE);
         let rowFilter = { type: 'NumberFilter', numberComparators: ['=', '>', '<='] };
         if (isNotField || counter === 1) rowFilter = { type: 'TextFilter' };
+        if (key === NAMES.PHONE) rowFilter.condition = 'eq';
         rowFilter.placeholder = NAMES.FILTER;
         if (!isNotField) {
           if (counter === 0) {

@@ -1,4 +1,4 @@
-from imbition.models import Permission, Department, Position, Employee, RecordField, Record, PendingEmployee, UserSetting
+from imbition.models import Permission, Department, Position, Employee, RecordField, Record, PendingEmployee, UserSetting, FilterProfile
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -236,6 +236,11 @@ class PendingEmployeeCheckSerializer(serializers.ModelSerializer):
     class Meta:
         model = PendingEmployee
         fields = ('id', 'phone', 'first_name', 'last_name')
+
+class FilterProfileAllSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FilterProfile
+        fields = ('id', 'filterObj', 'searchText', 'user')
 
 # Special Serializers
 class PositionPermissionListSerializer(serializers.ModelSerializer):

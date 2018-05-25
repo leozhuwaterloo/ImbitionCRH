@@ -76,6 +76,9 @@ NAMES.EDIT = '修改';
 NAMES.VIEW = '查看';
 NAMES.NAVIGATION_PANEL = '导航栏';
 
+NAMES.SAVE_FILTER_PROFILE = '保存档案';
+NAMES.NO_FILTER_PROFILE_TO_SAVE = '没有可以保存的档案';
+
 NAMES.SUCCESS = '成功';
 NAMES.PROCESSING = '进行中';
 NAMES.FETCH_SUCCESS_MESSAGE = dataName => `成功获取${dataName}数据`;
@@ -96,6 +99,7 @@ NAMES.REQUEST_MESSAGE = (type) => {
 };
 
 NAMES.DELETE = '删除';
+NAMES.SUM = '总和';
 NAMES.PHONE = '手机';
 NAMES.USERNAME = '用户名';
 NAMES.PASSWORD_RESET = '重置密码';

@@ -10,6 +10,7 @@ import
   SizePerPageDropDown,
 }
   from 'react-bootstrap-table';
+import { DirectUpdateText } from '../FormControl';
 import { NAMES } from '../../consts';
 
 class RecordViewMobile extends React.Component {
@@ -21,11 +22,46 @@ class RecordViewMobile extends React.Component {
       endDate: this.dateNow,
       showComment: {},
     };
+
+    this.sum = {};
+    this.sumTexts = {};
+    this.previousTarget = null;
+    this.tableChanged = this.tableChanged.bind(this);
+
     this.options = {
+      afterColumnFilter: this.tableChanged,
+      afterSearch: this.tableChanged,
+      searchDelayTime: 500,
+      defaultSearch: this.props.initFilterProfile.searchText,
       noDataText: NAMES.RECORD_VIEW_NO_DATA,
       exportCSVBtn: onClick => (
         <div className="center-display">
-          <button className="btn btn-light center-display p-1 pl-2 pr-2" onClick={onClick}>
+          <button
+            className="btn btn-light center-display p-1 pl-2 pr-2"
+            onClick={() => {
+              const newRow = {};
+              Object.keys(this.sum).forEach((key) => {
+                newRow[key] = this.sum[key];
+              });
+              newRow[NAMES.RECORD_VIEW_EMPLOYEE_FULL_NAME] = NAMES.SUM;
+
+              if (this.table.store.data[0]) {
+                Object.keys(this.table.store.data[0]).forEach((key) => {
+                  if (!(key in newRow)) newRow[key] = '';
+                });
+              }
+
+              if (this.table.store.isOnFilter) {
+                this.table.store.filteredData.push(newRow);
+                onClick();
+                this.table.store.filteredData.pop();
+              } else {
+                this.table.store.data.push(newRow);
+                onClick();
+                this.table.store.data.pop();
+              }
+            }}
+          >
             <FaCloudDownload className="mr-1" size={20} /> {NAMES.CSV_EXPORT}
           </button>
           <DatePicker
@@ -68,7 +104,7 @@ class RecordViewMobile extends React.Component {
           </button>
         </div>
       ),
-      searchField: () => <SearchField placeholder={NAMES.SEARCH} />,
+      searchField: rest => <SearchField placeholder={NAMES.SEARCH} defaultValue={rest.defaultValue} />,
       sizePerPageDropDown: () => (
         <SizePerPageDropDown
           btnContextual="btn-light"
@@ -76,6 +112,26 @@ class RecordViewMobile extends React.Component {
         />
       ),
     };
+  }
+
+  tableChanged(target) {
+    if (this.table && target !== null) {
+      const data = this.table.getTableDataIgnorePaging(),
+        sum = {};
+      if (data[0]) {
+        Object.keys(data[0]).filter(key => (key !== NAMES.RECORD_VIEW_EMPLOYEE_FULL_NAME
+            && key !== NAMES.DATE && key !== NAMES.POSITION && key !== NAMES.DEPARTMENT
+            && key !== NAMES.PHONE && !key.includes(NAMES.COMMENT)))
+          .forEach((key) => {
+            sum[key] = data.map(row => row[key]).reduce((acc, val) => acc + val);
+          });
+      }
+
+      this.sum = sum;
+      Object.keys(this.sumTexts).forEach((key) => {
+        this.sumTexts[key].updateText(this.sum[key]);
+      });
+    }
   }
 
   render() {
@@ -86,8 +142,23 @@ class RecordViewMobile extends React.Component {
         const isNotField = (key === NAMES.RECORD_VIEW_EMPLOYEE_FULL_NAME
           || key === NAMES.DATE || key === NAMES.POSITION || key === NAMES.DEPARTMENT
           || key === NAMES.PHONE);
-        let rowFilter = { type: 'NumberFilter', numberComparators: ['=', '>', '<='] };
-        if (isNotField || counter === 1) rowFilter = { type: 'TextFilter' };
+        let rowFilter = null;
+        if (isNotField || counter === 1) {
+          rowFilter = {
+            type: 'TextFilter',
+            defaultValue: (this.props.initFilterProfile.filterObj
+              && this.props.initFilterProfile.filterObj[key]
+              && this.initFilterProfile.filterObj[key].value) || null,
+          };
+        } else {
+          rowFilter = {
+            type: 'NumberFilter',
+            numberComparators: ['=', '>', '<='],
+            defaultValue: (this.props.initFilterProfile.filterObj
+              && this.props.initFilterProfile.filterObj[key]
+              && this.initFilterProfile.filterObj[key].value) || { number: null },
+          };
+        }
         if (key === NAMES.PHONE) rowFilter.condition = 'eq';
         rowFilter.placeholder = NAMES.FILTER;
         if (!isNotField) {
@@ -113,6 +184,14 @@ class RecordViewMobile extends React.Component {
                   />
                   <label className="form-check-label" htmlFor={`${key}-checkbox`}>{NAMES.COMMENT}</label>
                 </div>
+                <div className="bg-warning rounded center-display p-1">
+                  {NAMES.SUM}:&nbsp;
+                  <DirectUpdateText
+                    ref={(ref) => {
+                      this.sumTexts[key] = ref;
+                    }}
+                  />
+                </div>
               </TableHeaderColumn>
             ));
             counter = 2;
@@ -137,12 +216,15 @@ class RecordViewMobile extends React.Component {
         ));
       });
     }
-
     return (
       <div className="container-fluid mt-4">
         <div className="ml-2 mr-2">
           {this.props.recordsummary.data && this.props.recordsummary.data[0] &&
             <BootstrapTable
+              ref={(table) => {
+                this.table = table;
+                this.tableChanged('');
+              }}
               tableBodyClass="table table-dark"
               tableContainerClass="card"
               version="4"
@@ -160,6 +242,33 @@ class RecordViewMobile extends React.Component {
               {tableColumns}
             </BootstrapTable>
           }
+          <div className="row center-display">
+            <button
+              className="btn btn-info"
+              onClick={() => {
+                if (this.table && this.table.store && this.table.store.isOnFilter) {
+                  const filterProfile = {
+                      searchText: this.table.store.searchText,
+                      user: this.props.user.id,
+                    },
+                    filterObj = {};
+
+                  Object.keys(this.table.store.filterObj).forEach((key) => {
+                    filterObj[key] = {
+                      value: this.table.store.filterObj[key].value,
+                    };
+                  });
+
+                  filterProfile.filterObj = JSON.stringify(filterObj);
+                  this.props.createFilterProfile(filterProfile);
+                } else {
+                  this.props.notifyError(NAMES.NO_FILTER_PROFILE_TO_SAVE);
+                }
+              }}
+            >
+              {NAMES.SAVE_FILTER_PROFILE}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -167,8 +276,12 @@ class RecordViewMobile extends React.Component {
 }
 
 RecordViewMobile.propTypes = {
+  user: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   recordsummary: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   fetchRecordSummary: PropTypes.func.isRequired,
+  notifyError: PropTypes.func.isRequired,
+  createFilterProfile: PropTypes.func.isRequired,
+  initFilterProfile: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 
 export default RecordViewMobile;

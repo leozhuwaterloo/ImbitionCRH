@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, routers, mixins
 from imbition import serializers
-from imbition.models import Permission, Department, Position, Employee, RecordField, Record, PendingEmployee, UserSetting
+from imbition.models import Permission, Department, Position, Employee, RecordField, Record, PendingEmployee, UserSetting, FilterProfile
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
@@ -110,7 +110,7 @@ class FourSerializerViewSet(viewsets.ModelViewSet):
         raise PermissionDenied()
     @admin_only
     def destroy(self, request, *args, **kwargs):
-        response = super(FourSerializerViewSet, self).destroy(request, *args, **kwargs)
+        super(FourSerializerViewSet, self).destroy(request, *args, **kwargs)
         return Response({}) # no status, and have body as otherwise it halts the api fetch
 
 class PermissionViewSet(FourSerializerViewSet):
@@ -353,6 +353,41 @@ class PendingEmployeeViewSet(FourSerializerViewSet):
     @admin_only
     def list(self, request, *args, **kwargs):
         return super(FourSerializerViewSet, self).list(request, *args, **kwargs)
+
+class FilterProfileViewSet(FourSerializerViewSet):
+    list_serializer = serializers.FilterProfileAllSerializer
+    detail_serializer = serializers.FilterProfileAllSerializer
+    create_serializer = serializers.FilterProfileAllSerializer
+    update_serializer = serializers.FilterProfileAllSerializer
+    queryset = FilterProfile.objects.all()
+    @admin_only
+    def list(self, request, *args, **kwargs):
+        return super(FourSerializerViewSet, self).list(request, *args, **kwargs)
+    def retrieve(self, request, *args, **kwargs):
+        user_id = kwargs.get('pk', None)
+        if request.user and (request.user.is_staff or request.user.id == user_id):
+            user = get_object_or_404(User.objects.all(), pk=user_id)
+            serializer = self.detail_serializer(user.filter_profiles, many=True)
+            return Response(serializer.data)
+        raise PermissionDenied()
+    def create(self, request, *args, **kwargs):
+        if request.user and request.user.is_staff:
+            return super(FourSerializerViewSet, self).create(request, *args, **kwargs)
+        elif request.user:
+            user_id = request.data.get('user', None)
+            if user_id == request.user.id:
+                return super(FourSerializerViewSet, self).create(request, *args, **kwargs)
+        raise PermissionDenied()
+    def destroy(self, request, *args, **kwargs):
+        if request.user and request.user.is_staff:
+            super(FourSerializerViewSet, self).destroy(request, *args, **kwargs)
+            return Response({})
+        elif request.user:
+            filter_profile = get_object_or_404(FilterProfile.objects.all(), pk=kwargs.get('pk', None))
+            if filter_profile.user.id == request.user.id:
+                super(FourSerializerViewSet, self).destroy(request, *args, **kwargs)
+                return Response({})
+        raise PermissionDenied()
 
 # Speical Viewsets
 class PositionPermissionViewSet(viewsets.ViewSet):

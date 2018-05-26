@@ -1,9 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { AnimatedSwitch } from 'react-router-transition';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import MainPage from './MainPage';
-import MyNavbar from './MyNavbar';
+import { MyNavbar, SideNav } from './MyNavbar';
 import MyNotifications from './MyNotifications';
 import { RecordEdit, RecordSelfEdit, RecordView } from './Record';
 import { EmployeeEdit, PendingEmployeeEdit } from './Employee';
@@ -26,23 +27,40 @@ class AppDumb extends React.Component {
       <BrowserRouter>
         <div>
           <MyNavbar />
+          {this.props.sideNav ? <SideNav /> : null}
           <Switch>
             <Route exact path={URLS.LOGIN} component={Login} />
             <Route path={URLS.LOGIN_FIRST} component={LoginFirst} />
             <Route path={URLS.LOGOUT} component={Logout} />
             <EnsureLoggedInContainer>
-              <Route exact path={URLS.ROOT} component={MainPage} />
-              <Route path={URLS.SETTINGS} component={Settings} />
-              <Route path={URLS.RECORD_EDIT} component={RecordEdit} />
-              <Route path={URLS.RECORD_SELF_EDIT} component={RecordSelfEdit} />
-              <Route path={URLS.RECORD_VIEW} component={RecordView} />
-              <Route path={URLS.EMPLOYEE_EDIT} component={EmployeeEdit} />
-              <Route path={URLS.PENDING_EMPLOYEE_EDIT} component={PendingEmployeeEdit} />
-              <Route path={URLS.POSITION_TREE_VIEW} component={PositionTreeView} />
-              <Route path={URLS.PERMISSION_EDIT} component={PermissionEdit} />
-              <Route path={URLS.DEPARTMENT_EDIT} component={DepartmentEdit} />
-              <Route path={URLS.SUMMARY} component={MainPage} />
-              <Route path={URLS.ANALYSIS} component={MainPage} />
+              <AnimatedSwitch
+                atEnter={{ offset: -100 }}
+                atLeave={{ offset: 100 }}
+                atActive={{ offset: 0 }}
+                mapStyles={(styles) => {
+                  if (styles.offset === 0) {
+                    return null;
+                  }
+                  return {
+                    transform: `translateX(${styles.offset}%)`,
+                    position: 'absolute',
+                  };
+                }}
+                className="switch-wrapper"
+              >
+                <Route exact path={URLS.ROOT} component={MainPage} />
+                <Route path={URLS.SETTINGS} component={Settings} />
+                <Route path={URLS.RECORD_EDIT} component={RecordEdit} />
+                <Route path={URLS.RECORD_SELF_EDIT} component={RecordSelfEdit} />
+                <Route path={URLS.RECORD_VIEW} component={RecordView} />
+                <Route path={URLS.EMPLOYEE_EDIT} component={EmployeeEdit} />
+                <Route path={URLS.PENDING_EMPLOYEE_EDIT} component={PendingEmployeeEdit} />
+                <Route path={URLS.POSITION_TREE_VIEW} component={PositionTreeView} />
+                <Route path={URLS.PERMISSION_EDIT} component={PermissionEdit} />
+                <Route path={URLS.DEPARTMENT_EDIT} component={DepartmentEdit} />
+                <Route path={URLS.SUMMARY} component={MainPage} />
+                <Route path={URLS.ANALYSIS} component={MainPage} />
+              </AnimatedSwitch>
             </EnsureLoggedInContainer>
           </Switch>
           <MyNotifications />
@@ -54,11 +72,15 @@ class AppDumb extends React.Component {
 
 AppDumb.propTypes = {
   storeIsMobile: PropTypes.func.isRequired,
+  sideNav: PropTypes.bool.isRequired,
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapStateToProps = state => ({
+    sideNav: state.myNavbar.sideNav,
+  }),
+  mapDispatchToProps = dispatch => ({
     storeIsMobile: isMobile => dispatch(setIsMobile(isMobile)),
   }),
-  App = connect(null, mapDispatchToProps)(AppDumb);
+  App = connect(mapStateToProps, mapDispatchToProps)(AppDumb);
 
 export default App;

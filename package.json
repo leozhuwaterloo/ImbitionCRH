@@ -40,6 +40,7 @@
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^5.0.0-alpha.9",
+    "react-router-transition": "^1.2.1",
     "redux": "^3.7.2",
     "redux-api-middleware": "^2.3.0",
     "redux-persist": "^5.9.1",
@@ -60,12 +61,12 @@
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
-    "node-sass": "^4.8.3",
+    "node-sass": "^4.9.0",
     "react": "^16.3.1",
     "sass-loader": "^7.0.1",
     "style-loader": "^0.20.3",
     "webpack": "^4.5.0",
     "webpack-bundle-tracker": "^0.3.0",
-    "webpack-cli": "^2.0.14"
+    "webpack-cli": "^2.1.4"
   }
 }

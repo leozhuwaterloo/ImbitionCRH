@@ -64,7 +64,15 @@ class LoginForm extends React.Component {
         </div>
         <hr />
         <div className="form-group center-display">
-          <button type="submit" className="btn btn-success fill-container"><FaWechat /> {NAMES.LOGIN_WECHAT}</button>
+          <button
+            className="btn btn-success fill-container"
+            onClick={(event) => {
+              event.preventDefault();
+              alert(NAMES.FEATURE_NOT_SUPPORTED); // eslint-disable-line no-alert
+            }}
+          >
+            <FaWechat /> {NAMES.LOGIN_WECHAT}
+          </button>
         </div>
         <div className="form-group center-display">
           <Link className="nav-link" to={URLS.LOGIN_OTHER}>{NAMES.LOGIN_OTHER}</Link>

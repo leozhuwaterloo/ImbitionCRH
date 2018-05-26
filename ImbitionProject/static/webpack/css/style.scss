@@ -16,6 +16,11 @@ body {
   align-items: center;
 }
 
+.sticky-top {
+  position: fixed;
+  width: 100vw;
+}
+
 .fill-container {
   width: 100%;
   height: 100%;

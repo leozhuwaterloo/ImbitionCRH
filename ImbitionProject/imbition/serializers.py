@@ -240,7 +240,7 @@ class PendingEmployeeCheckSerializer(serializers.ModelSerializer):
 class FilterProfileAllSerializer(serializers.ModelSerializer):
     class Meta:
         model = FilterProfile
-        fields = ('id', 'filterObj', 'searchText', 'user')
+        fields = ('id', 'filterObj', 'searchText', 'user', 'name')
 
 # Special Serializers
 class PositionPermissionListSerializer(serializers.ModelSerializer):

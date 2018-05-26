@@ -10,13 +10,15 @@ import
   SizePerPageDropDown,
 }
   from 'react-bootstrap-table';
-import { DirectUpdateText } from '../FormControl';
+import { DirectUpdateText, MyModal, TextInput } from '../FormControl';
 import { NAMES } from '../../consts';
 
 class RecordViewMobile extends React.Component {
   constructor(props) {
     super(props);
     this.dateNow = moment();
+    this.modalId = 'recordview';
+    this.newFilterProfileName = '';
     this.state = {
       startDate: this.dateNow,
       endDate: this.dateNow,
@@ -217,59 +219,77 @@ class RecordViewMobile extends React.Component {
       });
     }
     return (
-      <div className="container-fluid mt-4">
-        <div className="ml-2 mr-2">
-          {this.props.recordsummary.data && this.props.recordsummary.data[0] &&
-            <BootstrapTable
-              ref={(table) => {
-                this.table = table;
-                this.tableChanged('');
-              }}
-              tableBodyClass="table table-dark"
-              tableContainerClass="card"
-              version="4"
-              data={this.props.recordsummary.data}
-              options={this.options}
-              exportCSV
-              csvFileName={`${NAMES.RECORD_VIEW}.csv`}
-              striped
-              hover
-              search
-              pagination
-              multiColumnSearch
-              keyBoardNav
-            >
-              {tableColumns}
-            </BootstrapTable>
-          }
-          <div className="row center-display">
-            <button
-              className="btn btn-info"
-              onClick={() => {
-                if (this.table && this.table.store && this.table.store.isOnFilter) {
-                  const filterProfile = {
-                      searchText: this.table.store.searchText,
-                      user: this.props.user.id,
-                    },
-                    filterObj = {};
-
-                  Object.keys(this.table.store.filterObj).forEach((key) => {
-                    filterObj[key] = {
-                      value: this.table.store.filterObj[key].value,
-                    };
-                  });
-
-                  filterProfile.filterObj = JSON.stringify(filterObj);
-                  this.props.createFilterProfile(filterProfile);
-                } else {
-                  this.props.notifyError(NAMES.NO_FILTER_PROFILE_TO_SAVE);
-                }
-              }}
-            >
-              {NAMES.SAVE_FILTER_PROFILE}
-            </button>
+      <div>
+        <div className="container-fluid mt-4">
+          <div className="ml-2 mr-2">
+            {this.props.recordsummary.data && this.props.recordsummary.data[0] &&
+              <BootstrapTable
+                ref={(table) => {
+                  this.table = table;
+                  this.tableChanged('');
+                }}
+                tableBodyClass="table table-dark"
+                tableContainerClass="card"
+                version="4"
+                data={this.props.recordsummary.data}
+                options={this.options}
+                exportCSV
+                csvFileName={`${NAMES.RECORD_VIEW}.csv`}
+                striped
+                hover
+                search
+                pagination
+                multiColumnSearch
+                keyBoardNav
+              >
+                {tableColumns}
+              </BootstrapTable>
+            }
+            <div className="row center-display">
+              <button
+                className="btn btn-info"
+                data-toggle="modal"
+                data-target={`#${this.modalId}-1`}
+              >
+                {NAMES.SAVE_FILTER_PROFILE}
+              </button>
+            </div>
           </div>
         </div>
+        <MyModal
+          id={`${this.modalId}-1`}
+          title={NAMES.SAVE_FILTER_PROFILE}
+          body={
+            <TextInput
+              name="name"
+              label={NAMES.FILTER_PROFILE_NAME}
+              labelClassName="mr-2"
+              onChange={(event) => {
+                this.newFilterProfileName = event.target.value;
+              }}
+            />
+          }
+          onSubmit={() => {
+            if (this.table && this.table.store && this.table.store.isOnFilter) {
+              const filterProfile = {
+                  searchText: this.table.store.searchText,
+                  user: this.props.user.id,
+                  name: this.newFilterProfileName,
+                },
+                filterObj = {};
+
+              Object.keys(this.table.store.filterObj).forEach((key) => {
+                filterObj[key] = {
+                  value: this.table.store.filterObj[key].value,
+                };
+              });
+              filterProfile.filterObj = JSON.stringify(filterObj);
+              this.props.createFilterProfile(filterProfile);
+            } else {
+              this.props.notifyError(NAMES.NO_FILTER_PROFILE_TO_SAVE);
+            }
+          }}
+        />
       </div>
     );
   }

@@ -1,14 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { setTitle } from '../actions';
-import SideNavWrapper from './SideNavWrapper';
+import { setTitle, setSideNav } from '../actions';
 import { NAMES } from '../consts';
 
 class DistinctViewPageDumb extends React.Component {
   componentWillMount() {
-    const { storeTitle, title } = this.props;
+    const {
+      storeTitle, title, sideNav, storeSideNav,
+    } = this.props;
     if (title) storeTitle(title);
+    storeSideNav(sideNav);
   }
   render() {
     const {
@@ -24,21 +26,32 @@ class DistinctViewPageDumb extends React.Component {
         </div>
       );
     }
+
     if (sideNav) {
       return (
-        <SideNavWrapper>
+        <div className="content">
           {desktopRender() || mobileRender()}
-        </SideNavWrapper>
+          <div className="container-fluid center-display text-secondary mt-5 mb-4">
+            {NAMES.FOOTER_TEXT}
+          </div>
+        </div>
       );
     }
 
-    return desktopRender() || mobileRender();
+    return (
+      <div className="no-switch-wrapper">
+        <div className="center-display">
+          {desktopRender() || mobileRender()}
+        </div>
+      </div>
+    );
   }
 }
 
 DistinctViewPageDumb.propTypes = {
   title: PropTypes.string.isRequired,
   storeTitle: PropTypes.func.isRequired,
+  storeSideNav: PropTypes.func.isRequired,
   isMobile: PropTypes.bool.isRequired,
   mobileRender: PropTypes.func,
   desktopRender: PropTypes.func,
@@ -51,12 +64,12 @@ DistinctViewPageDumb.defaultProps = {
   sideNav: true,
 };
 
-
 const mapStateToProps = state => ({
     isMobile: state.myNavbar.isMobile,
   }),
   mapDispatchToProps = dispatch => ({
     storeTitle: title => dispatch(setTitle(title)),
+    storeSideNav: sideNav => dispatch(setSideNav(sideNav)),
   }),
   DistinctViewPage = connect(mapStateToProps, mapDispatchToProps)(DistinctViewPageDumb);
 

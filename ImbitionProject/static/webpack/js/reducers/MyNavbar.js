@@ -1,8 +1,9 @@
-import { SET_TITLE, SET_ISMOBILE } from '../actions';
+import { SET_TITLE, SET_ISMOBILE, SET_SIDE_NAV } from '../actions';
 
 const initialState = {
   title: '首页',
   isMobile: true,
+  sideNav: false,
 };
 
 export default (state = initialState, action) => {
@@ -14,6 +15,10 @@ export default (state = initialState, action) => {
     case SET_ISMOBILE:
       return Object.assign({}, state, {
         isMobile: action.isMobile,
+      });
+    case SET_SIDE_NAV:
+      return Object.assign({}, state, {
+        sideNav: action.sideNav,
       });
     default:
       return state;

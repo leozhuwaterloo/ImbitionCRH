@@ -78,6 +78,7 @@ NAMES.NAVIGATION_PANEL = '导航栏';
 
 NAMES.SAVE_FILTER_PROFILE = '保存档案';
 NAMES.NO_FILTER_PROFILE_TO_SAVE = '没有可以保存的档案';
+NAMES.FILTER_PROFILE_NAME = '档案名';
 
 NAMES.SUCCESS = '成功';
 NAMES.PROCESSING = '进行中';
@@ -97,6 +98,9 @@ NAMES.REQUEST_MESSAGE = (type) => {
     default: return '';
   }
 };
+
+
+NAMES.FEATURE_NOT_SUPPORTED = '对不起, 暂时不支持这个功能';
 
 NAMES.DELETE = '删除';
 NAMES.SUM = '总和';

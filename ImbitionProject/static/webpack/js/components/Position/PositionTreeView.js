@@ -104,7 +104,7 @@ class PositionTreeViewDumb extends React.Component {
       .attr('transform', () => `translate(${source.x0}, ${source.y0})`)
       .on('click', this.nodeclick);
     nodeEnter.append('rect')
-      .attr('x', -50)
+      .attr('x', -60)
       .attr('y', -15)
       .style('fill-opacity', 1e-6)
       .attr('class', d => (d._children ? 'collapsed' : ''));
@@ -120,7 +120,7 @@ class PositionTreeViewDumb extends React.Component {
       .duration(this.duration)
       .attr('transform', d => `translate(${d.x},${d.y})`);
     nodeUpdate.select('rect')
-      .attr('width', 100)
+      .attr('width', 120)
       .attr('height', 30)
       .style('fill-opacity', 1)
       .attr('class', d => (d._children ? 'collapsed' : ''));

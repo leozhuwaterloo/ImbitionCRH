@@ -1,4 +1,26 @@
 {% extends 'imbition/base.html' %}
+{% block styles %}
+<style type="text/css">
+  .loader {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3487e2; /* Blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    opacity: 0.8;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+{% endblock %}
+
 {% block body %}
-<div id="react-app"><div>
+<div id="react-app"></div>
+<div id="preLoader" style="background-color: #d9e0e7; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center;">
+  <div class="loader"></div>
+</div>
 {% endblock %}

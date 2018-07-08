@@ -12,6 +12,7 @@ from imbition.permissions import DateRangeException, CustomBadRequest, CustomRes
 from datetime import timedelta, date, datetime
 import string
 import random
+from django.db import connection
 
 def daterange(start_date, end_date):
     for n in range(int((end_date - start_date).days) + 1):
@@ -466,72 +467,95 @@ class PositionTreeViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
 
-class RecordSummaryViewSet(viewsets.ViewSet):
+class RecordSummaryViewSet(APIView):
     permission_classes = (IsAuthenticated, )
-    queryset = Record.objects.all()
-    def list(self, request):
-        startDate = self.request.query_params.get('startDate', None)
-        endDate = self.request.query_params.get('endDate', None)
-        if startDate is None or endDate is None:
-            raise PermissionDenied()
-        startDate = datetime.strptime(startDate, '%Y-%m-%d').date()
-        endDate = datetime.strptime(endDate, '%Y-%m-%d').date()
-        if startDate > endDate: raise DateRangeException()
-        records = Record.objects.filter(date__range=[startDate, endDate])
-        fieldNames = set()
-        data = list()
-        recordmaps = dict()
-        ordermap = dict()
+    serializer_class = serializers.RecordSummarySerializer
+
+    def post(self, request, format=None):
+        start_date = request.data.get('start_date', None)
+        end_date = request.data.get('end_date', None)
+        employee_name = request.data.get('employee_name', None)
+        employee_phone = request.data.get('employee_phone', None)
+        position_name = request.data.get('position_name', None)
+        department_name = request.data.get('department_name', None)
+        # Validate date
+        if start_date is None or end_date is None:
+            raise CustomBadRequest("Must specify start_date and end_date")
+        try:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        except ValueError as e:
+            raise CustomBadRequest(str(e))
+        if start_date > end_date: raise DateRangeException()
+
         if request.user and request.user.is_staff:
-            employees = Employee.objects.all()
+            readable_ids = None
+        elif request.user and request.user.employee and request.user.employee.position:
+            readable_ids = set()
+            for readable in get_readable(request.user.employee.position):
+                readable_ids.append(readable.id)
         else:
-            employees = set()
-            for position in get_readable(request.user.employee.position):
-                for employee in position.employees.all():
-                    employees.add(employee)
-        for record in records:
-            if record.field.disabled:
-                continue
-            fieldName = record.field.name + ((" (%s)" % record.field.unit) if record.field.unit else "")
-            if fieldName not in ordermap or ordermap[fieldName] < record.field.order:
-                ordermap[fieldName] = record.field.order
-            fieldNames.add(fieldName)
-            if record.employee.id not in recordmaps:
-                recordmaps[record.employee.id] = dict();
-            if record.date not in recordmaps[record.employee.id]:
-                recordmaps[record.employee.id][record.date] = dict();
+            raise PermissionDenied()
 
-            recordmaps[record.employee.id][record.date][fieldName] = record;
+        with connection.cursor() as cursor:
+            cursor.execute('''
+                SELECT CONCAT(authUser.last_name, authUser.first_name) AS employee, employee.phone,
+                	pos.name AS position, record.date, depart.name AS department,
+                	record.value, record.comment, fie.name, fie.unit, fie.order
+                	FROM imbition_employee employee
+                LEFT JOIN imbition_position pos
+            	ON pos.id = employee.position_id
+            	LEFT JOIN imbition_department depart
+            	ON depart.id = pos.department_id
+            	LEFT JOIN auth_user authUser
+            	ON authUser.id = employee.user_id
+                LEFT JOIN imbition_record record
+                ON employee.id = record.employee_id
+                LEFT JOIN imbition_recordfield fie
+                ON fie.id = record.field_id
 
-        for date in daterange(startDate, endDate):
-            for employee in employees:
-                employeeData = dict()
-                employeeData["姓名"] = employee.get_full_name()
-                employeeData["手机"] = employee.phone
-                employeeData["岗位"] = employee.position.name if employee.position else None
-                employeeData["部门"] = employee.position.department.name if employee.position and employee.position.department else None
-                employeeData["日期"] = date
-                for fieldName in fieldNames:
-                    if employee.id in recordmaps and date in recordmaps[employee.id] and fieldName in recordmaps[employee.id][date]:
-                        employeeData[fieldName] = recordmaps[employee.id][date][fieldName].value
-                        employeeData["%s 备注" % fieldName] = recordmaps[employee.id][date][fieldName].comment
-                    else:
-                        employeeData[fieldName] = None
-                        employeeData["%s 备注" % fieldName] = None
-                data.append(employeeData)
+                WHERE (record.date BETWEEN '{start_date}' AND '{end_date}' OR record.date IS NULL)
+                {employee_name_query}
+                {employee_phone_query}
+                {employee_pos_query}
+                {employee_depart_query}
+                {readable_query}
+                ORDER BY fie.order
+            '''.format(
+                start_date = start_date,
+                end_date = end_date,
+                employee_name_query = "" if not employee_name else "AND CONCAT(authUser.last_name, authUser.first_name) = '{name}'".format(name=employee_name),
+                employee_phone_query = "" if not employee_phone else "AND employee.phone = '{phone}'".format(phone=employee_phone),
+                employee_pos_query = "" if not position_name else "AND pos.name = '{name}'".format(name=position_name),
+                employee_depart_query = "" if not department_name else "AND depart.name = '{name}'".format(name=department_name),
+                readable_query = "" if not readable_ids else "AND pos.id IN ({ids})".format(ids = ','.join(readable_ids)),
+            ))
+            rows = cursor.fetchall()
 
-        order = []
-        order.append("姓名")
-        order.append("手机")
-        order.append("岗位")
-        order.append("部门")
-        order.append("日期")
-        for fieldName in sorted(fieldNames, key=lambda name: ordermap[name]):
-            order.append(fieldName)
-            order.append("%s 备注" % fieldName)
-
+        columns = [column[0] for column in cursor.description]
+        data = dict()
+        order = ['姓名', '手机', '日期', '部门', '岗位']
+        fields = set()
+        for row in rows:
+            row_dict = dict(zip(columns, row))
+            key = str(row_dict['phone']) + str(row_dict['date'])
+            if key not in data:
+                data[key] = dict(
+                    姓名=row_dict['employee'],
+                    手机=row_dict['phone'],
+                    日期=row_dict['date'],
+                    部门=row_dict['department'],
+                    岗位=row_dict['position'],
+                )
+            if row_dict['name']:
+                value_name = row_dict['name'] + ((' (' + row_dict['unit'] + ')') if row_dict['unit'] else '')
+                comment_name = row_dict['name'] + ' 备注'
+                data[key][value_name] = row_dict['value']
+                data[key][comment_name] = row_dict['comment']
+                if value_name not in order: order.append(value_name)
+                if comment_name not in order: order.append(comment_name)
 
         return Response(dict(
-            data=data,
+            data=sorted(data.values(), key=lambda k: k['日期'] if k['日期'] is not None else date.min),
             order=order,
         ))

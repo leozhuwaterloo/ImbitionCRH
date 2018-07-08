@@ -2,14 +2,16 @@ import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 import { reducer as notifications } from 'react-notification-system-redux';
 import myNavbar from './MyNavbar';
+import filterProfile from './FilterProfile';
 import auth, * as fromAuth from './auth';
-import data from './Data';
+import data, * as fromData from './Data';
 
 export default combineReducers({
   auth,
   rounter: routerReducer,
   notifications,
   myNavbar,
+  filterProfile,
   data,
 });
 
@@ -20,7 +22,8 @@ export const getTempPassword = state => fromAuth.getTempPassword(state.auth),
   isAuthenticated = state => fromAuth.isAuthenticated(state.auth),
   isAccessTokenExpired = state => fromAuth.isAccessTokenExpired(state.auth),
   isRefreshTokenExpired = state => fromAuth.isRefreshTokenExpired(state.auth),
-  authErrors = state => fromAuth.authErrors(state.auth);
+  authErrors = state => fromAuth.authErrors(state.auth),
+  getFilterProfiles = state => fromData.getFilterProfiles(state.data);
 
 export function withAuth(headers = {}) {
   return state => Object.assign({}, headers, {

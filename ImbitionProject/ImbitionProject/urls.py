@@ -43,7 +43,6 @@ router.register(r'api/imbition/positionrecord', imbition_views.PositionRecordFie
 router.register(r'api/imbition/employeerecord', imbition_views.EmployeeRecordViewSet)
 router.register(r'api/imbition/user', imbition_views.UserDetailViewSet)
 router.register(r'api/imbition/positiontree', imbition_views.PositionTreeViewSet)
-router.register(r'api/imbition/recordsummary', imbition_views.RecordSummaryViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -56,4 +55,5 @@ urlpatterns = [
     path('api/auth/token/obtain/', TokenObtainPairView.as_view()),
     path('api/auth/token/refresh/', TokenRefreshView.as_view()),
     path('api/auth/password/reset/', imbition_views.PasswordResetView.as_view()),
+    path('api/imbition/recordsummary/', imbition_views.RecordSummaryViewSet.as_view()),
 ] + router.urls + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

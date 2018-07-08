@@ -11,6 +11,7 @@ import { EmployeeEdit, PendingEmployeeEdit } from './Employee';
 import PermissionEdit from './Permission';
 import PositionTreeView from './Position';
 import DepartmentEdit from './Department';
+import FilterProfileView from './FilterProfile';
 import EnsureLoggedInContainer from './EnsureLoggedInContainer';
 import Settings from './Settings';
 import { Login, Logout, LoginFirst } from './Login';
@@ -20,6 +21,7 @@ import { setIsMobile } from '../actions';
 class AppDumb extends React.Component {
   componentWillMount() {
     this.props.storeIsMobile(window.innerWidth <= 900);
+    document.getElementById('preLoader').remove();
   }
 
   render() {
@@ -48,7 +50,7 @@ class AppDumb extends React.Component {
                 }}
                 className="switch-wrapper"
               >
-                <Route exact path={URLS.ROOT} component={MainPage} />
+                <Route exact path={URLS.MAIN_PAGE} component={MainPage} />
                 <Route path={URLS.SETTINGS} component={Settings} />
                 <Route path={URLS.RECORD_EDIT} component={RecordEdit} />
                 <Route path={URLS.RECORD_SELF_EDIT} component={RecordSelfEdit} />
@@ -58,8 +60,7 @@ class AppDumb extends React.Component {
                 <Route path={URLS.POSITION_TREE_VIEW} component={PositionTreeView} />
                 <Route path={URLS.PERMISSION_EDIT} component={PermissionEdit} />
                 <Route path={URLS.DEPARTMENT_EDIT} component={DepartmentEdit} />
-                <Route path={URLS.SUMMARY} component={MainPage} />
-                <Route path={URLS.ANALYSIS} component={MainPage} />
+                <Route path={URLS.FILTER_PROFILE_VIEW} component={FilterProfileView} />
               </AnimatedSwitch>
             </EnsureLoggedInContainer>
           </Switch>

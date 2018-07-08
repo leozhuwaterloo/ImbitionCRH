@@ -48,10 +48,34 @@ const SideNavWrapperDumb = ({
       <div className="m-3">
         <li className="nav-item mb-1" style={{ fontSize: '0.8rem' }}>{NAMES.NAVIGATION_PANEL}</li>
         <li className="nav-item">
+          <Link className="nav-link text-secondary" to={URLS.MAIN_PAGE}>
+            <FontAwesome.FaDashboard className="mb-1 mr-1" />{NAMES.MAIN_PAGE}
+          </Link>
+        </li>
+        <li className="nav-item">
           <Link className="nav-link text-secondary" to={URLS.RECORD_SELF_EDIT}>
             <FontAwesome.FaLeanpub className="mb-1 mr-1" />{NAMES.RECORD_SELF_EDIT}
           </Link>
         </li>
+        <li
+          className="nav-item"
+          data-toggle="collapse"
+          data-target="#summary"
+          aria-expanded="false"
+          aria-controls="summary"
+        >
+          <a className="nav-link text-secondary" href="#edit">
+            <FontAwesome.FaDatabase className="mb-1 mr-1" />{NAMES.SUMMARY}
+            <FontAwesome.FaAngleRight className="float-right" />
+          </a>
+        </li>
+        <div className="collapse" id="summary">
+          <li className="nav-item ml-3 mr-3">
+            <Link className="nav-link text-secondary" to={URLS.FILTER_PROFILE_VIEW}>
+              <FontAwesome.FaArchive className="mb-1 mr-1" />{NAMES.FILTER_PROFILE_VIEW}
+            </Link>
+          </li>
+        </div>
         <li
           className="nav-item"
           data-toggle="collapse"

@@ -128,6 +128,8 @@ class PendingEmployee(models.Model):
 class FilterProfile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="filter_profiles")
     filterObj = models.CharField(max_length=500, null=True, blank=True)
+    showComment = models.CharField(max_length=500, null=True, blank=True)
+    columnHidden = models.CharField(max_length=500, null=True, blank=True)
     searchText = models.CharField(max_length=100, null=True, blank=True)
     name = models.CharField(max_length=50, null=False, blank=False)
 

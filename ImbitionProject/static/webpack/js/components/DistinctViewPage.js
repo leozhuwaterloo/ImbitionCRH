@@ -12,10 +12,12 @@ class DistinctViewPageDumb extends React.Component {
     if (title) storeTitle(title);
     storeSideNav(sideNav);
   }
+
   render() {
     const {
       isMobile, mobileRender, desktopRender, sideNav,
     } = this.props;
+
     if (isMobile) {
       return (
         <div>
@@ -28,6 +30,15 @@ class DistinctViewPageDumb extends React.Component {
     }
 
     if (sideNav) {
+      if (this.props.loading) {
+        return (
+          <div className="content">
+            <div className="center-display fill-height">
+              <div className="loader" />
+            </div>
+          </div>
+        );
+      }
       return (
         <div className="content">
           {desktopRender() || mobileRender()}
@@ -53,6 +64,7 @@ DistinctViewPageDumb.propTypes = {
   storeTitle: PropTypes.func.isRequired,
   storeSideNav: PropTypes.func.isRequired,
   isMobile: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
   mobileRender: PropTypes.func,
   desktopRender: PropTypes.func,
   sideNav: PropTypes.bool,
@@ -66,6 +78,7 @@ DistinctViewPageDumb.defaultProps = {
 
 const mapStateToProps = state => ({
     isMobile: state.myNavbar.isMobile,
+    loading: state.myNavbar.loading,
   }),
   mapDispatchToProps = dispatch => ({
     storeTitle: title => dispatch(setTitle(title)),

@@ -46,6 +46,12 @@ function apiRequest(method, requestTag, successTag, failureTag, target, body, ke
   };
 }
 
+export function fetchRecordSummary(body, callback) {
+  return apiRequest(
+    'POST', FETCH_REQUEST, FETCH_SUCCESS, FETCH_FAILURE,
+    'recordsummary', body, 'recordsummary', callback, null,
+  );
+}
 
 export function fetchData(target, key, callback, query) {
   return apiRequest('GET', FETCH_REQUEST, FETCH_SUCCESS, FETCH_FAILURE, target, null, key, callback, query);

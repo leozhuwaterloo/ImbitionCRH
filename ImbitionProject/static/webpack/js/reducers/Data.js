@@ -12,6 +12,7 @@ const initialState = {
   permissions: [],
   recordfields: [],
   pendingemployees: [],
+  filterprofiles: [],
 
   fetcherrors: {},
   updateerrors: {},
@@ -83,3 +84,11 @@ export default (state = initialState, action) => {
       return state;
   }
 };
+
+export function getFilterProfiles(state) {
+  return state.filterprofiles.map(filterprofile => Object.assign({}, filterprofile, {
+    filterObj: filterprofile.filterObj && JSON.parse(filterprofile.filterObj),
+    showComment: filterprofile.showComment && JSON.parse(filterprofile.showComment),
+    columnHidden: filterprofile.columnHidden && JSON.parse(filterprofile.columnHidden),
+  }));
+}

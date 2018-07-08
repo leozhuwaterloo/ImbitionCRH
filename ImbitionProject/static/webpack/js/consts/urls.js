@@ -1,5 +1,6 @@
 const URLS = {};
 URLS.ROOT = '/imbition/';
+URLS.MAIN_PAGE = URLS.ROOT;
 URLS.LOGIN = `${URLS.ROOT}login/`;
 URLS.LOGIN_FIRST = `${URLS.LOGIN}first/`;
 URLS.LOGIN_OTHER = `${URLS.LOGIN}other/`;
@@ -12,9 +13,8 @@ URLS.PENDING_EMPLOYEE_EDIT = `${URLS.ROOT}pendingemployee/edit/`;
 URLS.PERMISSION_EDIT = `${URLS.ROOT}permission/edit/`;
 URLS.POSITION_TREE_VIEW = `${URLS.ROOT}position/tree/`;
 URLS.DEPARTMENT_EDIT = `${URLS.ROOT}department/edit/`;
-URLS.SUMMARY = `${URLS.ROOT}summary/`;
+URLS.FILTER_PROFILE_VIEW = `${URLS.ROOT}filterprofile/view/`;
 URLS.SETTINGS = `${URLS.ROOT}settings/`;
-URLS.ANALYSIS = `${URLS.ROOT}analysis/`;
 URLS.IMAGE = '/static/imbition/img/';
 
 export default URLS;

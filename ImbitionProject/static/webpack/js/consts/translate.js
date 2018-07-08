@@ -33,6 +33,7 @@ TRANSLATE.newPasswordConfirm = '重复新密码';
 TRANSLATE.firstName = '名';
 TRANSLATE.lastName = '姓';
 TRANSLATE.pendingemployees = '待注册员工';
+TRANSLATE.filterprofiles = '档案';
 
 
 export default function translate(str) {

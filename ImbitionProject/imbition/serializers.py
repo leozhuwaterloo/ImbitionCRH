@@ -240,7 +240,7 @@ class PendingEmployeeCheckSerializer(serializers.ModelSerializer):
 class FilterProfileAllSerializer(serializers.ModelSerializer):
     class Meta:
         model = FilterProfile
-        fields = ('id', 'filterObj', 'searchText', 'user', 'name')
+        fields = ('id', 'filterObj', 'showComment', 'columnHidden', 'searchText', 'user', 'name')
 
 # Special Serializers
 class PositionPermissionListSerializer(serializers.ModelSerializer):
@@ -290,3 +290,11 @@ class PasswordResetSerializer(serializers.Serializer):
     new_password_confirm = serializers.CharField(
         style={'input_type': 'password'}
     )
+
+class RecordSummarySerializer(serializers.Serializer):
+    start_date = serializers.DateField()
+    end_date = serializers.DateField()
+    employee_name = serializers.CharField()
+    employee_phone = serializers.CharField()
+    position_name = serializers.CharField()
+    department_name = serializers.CharField()

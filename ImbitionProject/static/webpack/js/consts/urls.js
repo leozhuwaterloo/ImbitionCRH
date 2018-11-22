@@ -1,6 +1,6 @@
 const URLS = {};
 URLS.ROOT = '/imbition/';
-URLS.MAIN_PAGE = URLS.ROOT;
+URLS.DASHBOARD = `${URLS.ROOT}dashboard/`;
 URLS.LOGIN = `${URLS.ROOT}login/`;
 URLS.LOGIN_FIRST = `${URLS.LOGIN}first/`;
 URLS.LOGIN_OTHER = `${URLS.LOGIN}other/`;

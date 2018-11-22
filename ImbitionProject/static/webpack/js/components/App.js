@@ -3,7 +3,12 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { AnimatedSwitch } from 'react-router-transition';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import 'bootstrap/js/dist/collapse';
+import 'bootstrap/js/dist/modal';
+import 'bootstrap/js/dist/dropdown';
+
 import MainPage from './MainPage';
+import DashBoard from './DashBoard';
 import { MyNavbar, SideNav } from './MyNavbar';
 import MyNotifications from './MyNotifications';
 import { RecordEdit, RecordSelfEdit, RecordView } from './Record';
@@ -29,7 +34,7 @@ class AppDumb extends React.Component {
       <BrowserRouter>
         <div>
           <MyNavbar />
-          {this.props.sideNav ? <SideNav /> : null}
+          {window.innerWidth > 900 && this.props.sideNav ? <SideNav /> : null}
           <Switch>
             <Route exact path={URLS.LOGIN} component={Login} />
             <Route path={URLS.LOGIN_FIRST} component={LoginFirst} />
@@ -50,7 +55,8 @@ class AppDumb extends React.Component {
                 }}
                 className="switch-wrapper"
               >
-                <Route exact path={URLS.MAIN_PAGE} component={MainPage} />
+                <Route exact path={URLS.ROOT} component={MainPage} />
+                <Route exact path={URLS.DASHBOARD} component={DashBoard} />
                 <Route path={URLS.SETTINGS} component={Settings} />
                 <Route path={URLS.RECORD_EDIT} component={RecordEdit} />
                 <Route path={URLS.RECORD_SELF_EDIT} component={RecordSelfEdit} />

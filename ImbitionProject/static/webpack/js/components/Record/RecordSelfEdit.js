@@ -6,6 +6,7 @@ import DistinctViewPage from '../DistinctViewPage';
 import { NAMES } from '../../consts';
 import { fetchData, createData, updateData } from '../../actions';
 import RecordSelfEditMobile from './RecordSelfEditMobile';
+import RecordSelfEditDesktop from './RecordSelfEditDesktop';
 
 class RecordSelfEditDumb extends React.Component {
   constructor(props) {
@@ -28,6 +29,7 @@ class RecordSelfEditDumb extends React.Component {
       <DistinctViewPage
         title={NAMES.RECORD_SELF_EDIT}
         mobileRender={() => <RecordSelfEditMobile {...this.props} />}
+        desktopRender={() => <RecordSelfEditDesktop {...this.props} />}
       />
     );
   }

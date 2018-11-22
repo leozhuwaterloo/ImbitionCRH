@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import 'bootstrap/js/dist/modal';
 
 const MyModal = ({
   id, title, body, btn1, btn2, onSubmit, className,

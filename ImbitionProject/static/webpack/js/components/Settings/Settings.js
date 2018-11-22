@@ -38,7 +38,7 @@ class SettingsDumb extends React.Component {
     };
     this.mobileRender = () => (
       <div>
-        <div className="container mt-5 col-8 shadow mb-5 bg-white rounded pt-5 pb-5">
+        <div className={`container mt-5 shadow mb-5 bg-white rounded pt-5 pb-5 col-${this.props.isMobile ? 11 : 8}`}>
           <div className="ml-3 mr-3">
             <div className="form-group center-display">
               <a
@@ -192,6 +192,7 @@ SettingsDumb.propTypes = {
   updateUser: PropTypes.func.isRequired,
   resetPassword: PropTypes.func.isRequired,
   tempPassword: PropTypes.string,
+  isMobile: PropTypes.bool.isRequired,
 };
 
 SettingsDumb.defaultProps = {
@@ -202,6 +203,7 @@ const mapStateToProps = state => ({
     user: state.data.user,
     updateerrors: state.data.updateerrors,
     tempPassword: getTempPassword(state),
+    isMobile: state.myNavbar.isMobile,
   }),
   mapDispatchToProps = dispatch => ({
     updateUser: (employeeId, userId, body) => {

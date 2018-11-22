@@ -20,7 +20,7 @@ class DistinctViewPageDumb extends React.Component {
 
     if (isMobile) {
       return (
-        <div>
+        <div className="position-absolute fill-container">
           {mobileRender()}
           <div className="container-fluid center-display text-secondary mt-5 mb-4">
             {NAMES.FOOTER_TEXT}

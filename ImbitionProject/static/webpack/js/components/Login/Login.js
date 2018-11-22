@@ -15,7 +15,7 @@ class LoginDumb extends React.Component {
     this.mobileRender = () => (
       <div className="container mt-5 col-8">
         <div className="fill-container center-display mb-3">
-          <FaUser size={100} className="text-secondary" />
+          <FaUser size={100} className="text-secondary mt-5" />
         </div>
         <LoginForm
           onSubmit={this.props.onSubmit}

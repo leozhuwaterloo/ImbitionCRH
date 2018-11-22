@@ -3,10 +3,9 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as FontAwesome from 'react-icons/lib/fa';
-import 'bootstrap/js/dist/collapse';
 import { NAMES, URLS } from '../../consts';
 
-const SideNavWrapperDumb = ({
+const SideNavDumb = ({
     user,
   }) => (
     <ul className="nav flex-column bg-dark text-secondary side-nav">
@@ -48,8 +47,8 @@ const SideNavWrapperDumb = ({
       <div className="m-3">
         <li className="nav-item mb-1" style={{ fontSize: '0.8rem' }}>{NAMES.NAVIGATION_PANEL}</li>
         <li className="nav-item">
-          <Link className="nav-link text-secondary" to={URLS.MAIN_PAGE}>
-            <FontAwesome.FaDashboard className="mb-1 mr-1" />{NAMES.MAIN_PAGE}
+          <Link className="nav-link text-secondary" to={URLS.ROOT}>
+            <FontAwesome.FaDashboard className="mb-1 mr-1" />{NAMES.ROOT}
           </Link>
         </li>
         <li className="nav-item">
@@ -145,10 +144,10 @@ const SideNavWrapperDumb = ({
   mapStateToProps = state => ({
     user: state.data.user,
   }),
-  SideNavWrapper = connect(mapStateToProps)(SideNavWrapperDumb);
+  SideNav = connect(mapStateToProps)(SideNavDumb);
 
-SideNavWrapperDumb.propTypes = {
+SideNavDumb.propTypes = {
   user: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
 };
 
-export default SideNavWrapper;
+export default SideNav;

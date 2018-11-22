@@ -1,17 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import FaCalendarPlusO from 'react-icons/lib/fa/calendar-plus-o';
-import FaBarChart from 'react-icons/lib/fa/bar-chart';
-import FaLineChart from 'react-icons/lib/fa/line-chart';
-import FaUserPlus from 'react-icons/lib/fa/user-plus';
-import FaLock from 'react-icons/lib/fa/lock';
-import FaFlag from 'react-icons/lib/fa/flag';
+import * as FontAwesome from 'react-icons/lib/fa';
 import { URLS, NAMES } from '../../consts';
 
 const MainPageMobile = () => (
   <div className="container mt-5">
     <div className="container-fluid mb-4">
-      <div className="row center-display mb-3">
+      <div className="row center-display">
         <img src={`${URLS.IMAGE}logo.png`} alt="车融汇" />
       </div>
       <blockquote className="blockquote text-center">
@@ -21,43 +16,77 @@ const MainPageMobile = () => (
     </div>
     <div className="container-fluid">
       <div className="row mb-3">
-        <Link className="col text-primary nav-link" to={URLS.RECORD_EDIT}>
+        <Link className="col text-primary nav-link" to={URLS.RECORD_SELF_EDIT}>
           <div className="center-display">
-            <FaCalendarPlusO size={80} />
+            <FontAwesome.FaLeanpub size={80} />
           </div>
-          <p className="center-display">{NAMES.RECORD_EDIT}</p>
+          <p className="center-display">{NAMES.RECORD_SELF_EDIT}</p>
         </Link>
-        <Link className="col text-secondary nav-link" to={URLS.SUMMARY}>
+        <Link className="col text-secondary nav-link" to={URLS.FILTER_PROFILE_VIEW}>
           <div className="center-display">
-            <FaBarChart size={80} />
+            <FontAwesome.FaArchive size={80} />
           </div>
-          <p className="center-display">{NAMES.SUMMARY}</p>
+          <p className="center-display">{NAMES.FILTER_PROFILE_VIEW}</p>
         </Link>
-        <Link className="col text-success nav-link" to={URLS.ANALYSIS}>
+        <Link className="col text-success nav-link" to={URLS.RECORD_VIEW}>
           <div className="center-display">
-            <FaLineChart size={80} />
+            <FontAwesome.FaCalendar size={80} />
           </div>
-          <p className="center-display">{NAMES.ANALYSIS}</p>
+          <p className="center-display">{NAMES.RECORD_VIEW}</p>
         </Link>
       </div>
       <div className="row">
-        <Link className="col text-info nav-link" to={URLS.EMPLOYEE_EDIT}>
+        <Link className="col text-info nav-link" to={URLS.RECORD_EDIT}>
           <div className="center-display">
-            <FaUserPlus size={80} />
+            <FontAwesome.FaCalendarPlusO size={80} />
+          </div>
+          <p className="center-display">{NAMES.RECORD_EDIT}</p>
+        </Link>
+        <Link className="col text-warning nav-link" to={URLS.EMPLOYEE_EDIT}>
+          <div className="center-display">
+            <FontAwesome.FaGroup size={80} />
           </div>
           <p className="center-display">{NAMES.EMPLOYEE_EDIT}</p>
         </Link>
-        <Link className="col text-warning nav-link" to={URLS.PERMISSION_EDIT}>
+        <Link className="col text-danger nav-link" to={URLS.PERMISSION_EDIT}>
           <div className="center-display">
-            <FaLock size={80} />
+            <FontAwesome.FaLock size={80} />
           </div>
           <p className="center-display">{NAMES.PERMISSION_EDIT}</p>
         </Link>
-        <Link className="col text-danger nav-link" to={URLS.DEPARTMENT_EDIT}>
+      </div>
+      <div className="row">
+        <Link className="col text-primary nav-link" to={URLS.DEPARTMENT_EDIT}>
           <div className="center-display">
-            <FaFlag size={80} />
+            <FontAwesome.FaFlag size={80} />
           </div>
           <p className="center-display">{NAMES.DEPARTMENT_EDIT}</p>
+        </Link>
+        <Link className="col text-secondary nav-link" to={URLS.PENDING_EMPLOYEE_EDIT}>
+          <div className="center-display">
+            <FontAwesome.FaUserPlus size={80} />
+          </div>
+          <p className="center-display">{NAMES.PENDING_EMPLOYEE_EDIT}</p>
+        </Link>
+        <Link className="col text-success nav-link" to={URLS.DASHBOARD}>
+          <div className="center-display">
+            <FontAwesome.FaDashboard size={80} />
+          </div>
+          <p className="center-display">{NAMES.DASHBOARD}</p>
+        </Link>
+      </div>
+      <div className="row center-display">
+        <Link className="col text-info nav-link" to={URLS.SETTINGS}>
+          <div className="center-display">
+            <FontAwesome.FaCogs size={80} />
+          </div>
+          <p className="center-display">{NAMES.SETTINGS}</p>
+        </Link>
+        <Link className="col text-warning nav-link" to={URLS.LOGOUT}>
+          <div className="center-display">
+            <FontAwesome.FaSignOut size={80} />
+          </div>
+          <p className="center-display">{NAMES.LOGOUT_SUBMIT}</p>
         </Link>
       </div>
     </div>

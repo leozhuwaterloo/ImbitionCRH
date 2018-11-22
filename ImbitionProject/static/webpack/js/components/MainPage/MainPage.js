@@ -1,13 +1,13 @@
 import React from 'react';
 import MainPageMobile from './MainPageMobile';
-import MainPageDesktop from './MainPageDesktop';
+import { DashBoardDesktop } from '../DashBoard';
 import DistinctViewPage from '../DistinctViewPage';
 import { NAMES } from '../../consts';
 
 export default () => (
   <DistinctViewPage
-    title={NAMES.MAIN_PAGE}
+    title={NAMES.ROOT}
     mobileRender={() => <MainPageMobile />}
-    desktopRender={() => <MainPageDesktop />}
+    desktopRender={() => <DashBoardDesktop />}
   />
 );

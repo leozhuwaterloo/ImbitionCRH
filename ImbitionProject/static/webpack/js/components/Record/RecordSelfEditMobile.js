@@ -36,11 +36,11 @@ class RecordSelfEditMobile extends React.Component {
 
   render() {
     const { records, errors } = this.state,
-      { user, recordfields } = this.props;
+      { user, recordfields, colSize } = this.props;
     if (!user || !user.position) return null;
     if (!recordfields || Object.keys(recordfields).length === 0) return null;
     return (
-      <div className="container mt-5 col-8 shadow mb-5 bg-white rounded pt-5 pb-5">
+      <div className={`container mt-5 shadow mb-5 bg-white rounded pt-5 pb-5 col-${colSize}`}>
         <div className="ml-3 mr-3">
           <div className="form-group center-display">
             <label htmlFor="#date" className="m-0 mr-3">{NAMES.DATE}</label>
@@ -117,7 +117,11 @@ RecordSelfEditMobile.propTypes = {
   updateerrors: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   fetchEmployeeRecord: PropTypes.func.isRequired,
   updateRecords: PropTypes.func.isRequired,
+  colSize: PropTypes.number,
 };
 
+RecordSelfEditMobile.defaultProps = {
+  colSize: 11,
+};
 
 export default RecordSelfEditMobile;

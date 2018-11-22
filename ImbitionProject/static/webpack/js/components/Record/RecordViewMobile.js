@@ -5,7 +5,7 @@ import DatePicker from 'react-datepicker';
 import FaEye from 'react-icons/lib/fa/eye';
 import FaEyeSlash from 'react-icons/lib/fa/eye-slash';
 import FaCloudDownload from 'react-icons/lib/fa/cloud-download';
-import 'bootstrap/js/dist/dropdown';
+
 import
 {
   BootstrapTable, TableHeaderColumn, SearchField,
